@@ -1,0 +1,22 @@
+# Dependency directories
+node_modules/
+frontend/node_modules/
+backend/node_modules/
+
+# Local env files (contain database credentials)
+.env
+backend/.env
+frontend/.env
+
+# Build outputs
+dist/
+frontend/dist/
+build/
+
+# Scratch & logs
+scratch/
+*.log
+
+# OS metadata
+.DS_Store
+Thumbs.db

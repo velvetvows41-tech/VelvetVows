@@ -1,0 +1,18 @@
+{
+  "name": "velvetvows-root",
+  "version": "1.0.0",
+  "description": "VelvetVows MERN App Monorepo Root",
+  "private": true,
+  "scripts": {
+    "install-all": "npm install --prefix backend && npm install --prefix frontend",
+    "server": "npm start --prefix backend",
+    "client": "npm run dev --prefix frontend",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "mongodb": "^7.5.0"
+  }
+}
