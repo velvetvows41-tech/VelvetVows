@@ -190,13 +190,21 @@ function DashPanel({ type, title, icon, headerClass, images, onAdd, onDelete, on
 
   const handlePublish = async () => {
     if (pendingImages.length === 0) return;
-    await onAdd(type, pendingImages);
-    showToast(`✓ ${pendingImages.length} image${pendingImages.length > 1 ? 's' : ''} published to ${title}!`, 'success');
-    setPendingImages([]);
+    const success = await onAdd(type, pendingImages);
+    if (success) {
+      showToast(`✓ ${pendingImages.length} image${pendingImages.length > 1 ? 's' : ''} published to ${title}!`, 'success');
+      setPendingImages([]);
+    } else {
+      showToast(`❌ Failed to publish images. Please check the backend server logs.`, 'error');
+    }
   };
 
   const handleRemovePending = (id) => {
     setPendingImages(prev => prev.filter(img => img.id !== id));
+  };
+
+  const handleUpdatePendingLabel = (id, newLabel) => {
+    setPendingImages(prev => prev.map(img => img.id === id ? { ...img, label: newLabel } : img));
   };
 
   const handleDeleteCurrent = async (id) => {
@@ -242,9 +250,18 @@ function DashPanel({ type, title, icon, headerClass, images, onAdd, onDelete, on
             </div>
             <div className="dash-pending-row">
               {pendingImages.map(img => (
-                <div className="dash-pending-thumb" key={img.id}>
-                  <img src={img.src} alt={img.label} />
-                  <button className="dash-pending-remove" onClick={() => handleRemovePending(img.id)}>&times;</button>
+                <div className="dash-pending-item" key={img.id}>
+                  <div className="dash-pending-thumb">
+                    <img src={img.src} alt={img.label} />
+                    <button className="dash-pending-remove" onClick={() => handleRemovePending(img.id)}>&times;</button>
+                  </div>
+                  <input
+                    type="text"
+                    className="dash-pending-input"
+                    placeholder="Add label..."
+                    value={img.label || ''}
+                    onChange={(e) => handleUpdatePendingLabel(img.id, e.target.value)}
+                  />
                 </div>
               ))}
             </div>

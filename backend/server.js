@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const dotenv = require('dotenv');
+const mongoose = require('mongoose');
 const connectDB = require('./config/db');
 
 // Models for seeding
@@ -19,8 +20,23 @@ const app = express();
 
 // Middlewares
 app.use(cors());
-app.use(express.json({ limit: '50mb' })); // Support base64 image strings
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
+app.use(express.json({ limit: '100mb' })); // Support base64 image strings
+app.use(express.urlencoded({ limit: '100mb', extended: true }));
+
+// Middleware to ensure DB connection is ready before processing API requests
+app.use((req, res, next) => {
+  // Allow root requests and static uploads
+  if (req.path === '/' || req.path.startsWith('/uploads')) {
+    return next();
+  }
+  const state = mongoose.connection.readyState;
+  if (state !== 1 && state !== 2) {
+    return res.status(503).json({
+      message: 'Database connection is offline. Please check your MongoDB Atlas IP Whitelist settings or local database instance.'
+    });
+  }
+  next();
+});
 
 // Serve uploaded images statically
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -96,7 +112,10 @@ const seedData = async () => {
   }
 };
 
-seedData();
+mongoose.connection.once('open', () => {
+  console.log('MongoDB connection established. Seeding default data...');
+  seedData();
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

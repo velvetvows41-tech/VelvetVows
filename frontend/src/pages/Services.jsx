@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useAdmin } from '../context/AdminContext';
 
 const services = [
   {
@@ -52,22 +53,66 @@ const services = [
   }
 ];
 
-export default function Services() {
+function ServiceCard({ svc }) {
+  const [loaded, setLoaded] = React.useState(false);
+
   return (
-    <main>
-      <div className="page-banner" role="banner">
-        <div className="page-banner-text">
-          <h1>OUR SERVICES</h1>
-          <p className="breadcrumb">
-            <Link to="/">Home</Link> &nbsp;/&nbsp; Services
-          </p>
+    <div className="svc-card">
+      <div className={`svc-card-img ${loaded ? 'loaded' : 'loading'}`}>
+        {!loaded && (
+          <div className="svc-card-shimmer"></div>
+        )}
+        <img 
+          src={svc.image} 
+          alt={svc.title} 
+          loading="lazy" 
+          decoding="async"
+          onLoad={() => setLoaded(true)}
+          style={{ opacity: loaded ? 1 : 0, transition: 'opacity 0.6s ease-out' }}
+        />
+        <div className="svc-card-overlay">
+          <span className="svc-overlay-badge">{svc.badge}</span>
         </div>
       </div>
+      <div className="svc-card-body">
+        <h3>{svc.title}</h3>
+        <span className="svc-subtitle">{svc.badge}</span>
+        <div className="svc-divider"></div>
+        <p className="svc-desc">{svc.description}</p>
+      </div>
+    </div>
+  );
+}
+
+export default function Services() {
+  const { serviceImages } = useAdmin();
+
+  const displayServices = serviceImages.length > 0
+    ? serviceImages.map((img, index) => {
+        const defaultMeta = services[index] || {
+          badge: "EXCLUSIVE SERVICE",
+          title: img.label || `Custom Service ${index + 1}`,
+          subtitle: "Bespoke Curation",
+          description: "Custom curated services designed and executed by our expert hospitality professionals."
+        };
+        return {
+          id: img.id || index,
+          badge: defaultMeta.badge,
+          title: img.label || defaultMeta.title,
+          subtitle: defaultMeta.subtitle || defaultMeta.badge,
+          description: defaultMeta.description,
+          image: img.src
+        };
+      })
+    : services;
+
+  return (
+    <main className="subpage-layout">
 
       {/* Services Intro */}
       <section className="services-intro">
         <span className="ornament">✦</span>
-        <h2>SIGNATURE WEDDING EXPERIENCE PACKAGES</h2>
+        <h2>SIGNATURE EXPERIENCE PACKAGES</h2>
         <p>Bespoke planning & themes custom tailored to reflect your identity and culture</p>
         <div className="gold-line"></div>
       </section>
@@ -75,21 +120,8 @@ export default function Services() {
       {/* Services Grid */}
       <section className="services-grid-wrap" style={{ paddingBottom: '80px' }}>
         <div className="services-grid">
-          {services.map((svc) => (
-            <div key={svc.id} className="svc-card">
-              <div className="svc-card-img">
-                <img src={svc.image} alt={svc.title} />
-                <div className="svc-card-overlay">
-                  <span className="svc-overlay-badge">{svc.badge}</span>
-                </div>
-              </div>
-              <div className="svc-card-body">
-                <h3>{svc.title}</h3>
-                <span className="svc-subtitle">{svc.badge}</span>
-                <div className="svc-divider"></div>
-                <p className="svc-desc">{svc.description}</p>
-              </div>
-            </div>
+          {displayServices.map((svc) => (
+            <ServiceCard key={svc.id} svc={svc} />
           ))}
         </div>
       </section>
@@ -98,7 +130,7 @@ export default function Services() {
       <section className="process-section" style={{ borderTop: '1px solid rgba(184, 150, 46, 0.15)', padding: '80px 24px' }}>
         <span className="ornament">✦</span>
         <h2>THE VELVET PLANNING TIMELINE</h2>
-        <p>How we bring your dream wedding to life step-by-step</p>
+        <p>How we bring your dream milestone events to life step-by-step</p>
         <div className="gold-line"></div>
 
         <div className="process-grid">
@@ -128,8 +160,8 @@ export default function Services() {
       {/* Services CTA Banner */}
       <section className="services-cta">
         <span className="ornament">✦</span>
-        <h3>Ready to Begin Your Wedding Journey?</h3>
-        <p>Let's craft a celebration as unique as your love story.</p>
+        <h3>Ready to Plan Your Next Grand Event?</h3>
+        <p>Let's craft a celebration as unique as your vision.</p>
         <Link to="/contact" className="cta-btn">Consult with an Advisor</Link>
       </section>
     </main>

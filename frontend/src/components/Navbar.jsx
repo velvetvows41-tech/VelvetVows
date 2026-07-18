@@ -16,8 +16,13 @@ export default function Navbar() {
   ];
 
   useEffect(() => {
+    let scrolled = false;
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      const isWindowScrolled = window.scrollY > 20;
+      if (isWindowScrolled !== scrolled) {
+        scrolled = isWindowScrolled;
+        setIsScrolled(isWindowScrolled);
+      }
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
@@ -31,6 +36,7 @@ export default function Navbar() {
     <nav className={`navbar ${isScrolled ? 'navbar--scrolled' : ''}`} role="navigation" aria-label="Main navigation">
       <Link to="/" className="nav-logo" aria-label="Velvet Vows Home">
         <img src="/images/logo.jpg" alt="Velvet Vows Logo" className="nav-logo-img" />
+        <span className="nav-logo-text">Velvet Vows</span>
       </Link>
 
       <ul className="nav-links" role="menubar">

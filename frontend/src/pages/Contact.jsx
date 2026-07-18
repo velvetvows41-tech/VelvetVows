@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useAdmin } from '../context/AdminContext';
 
 const emptyForm = {
@@ -53,15 +52,7 @@ export default function Contact() {
   };
 
   return (
-    <main>
-      <div className="page-banner" role="banner">
-        <div className="page-banner-text">
-          <h1>CONTACT US</h1>
-          <p className="breadcrumb">
-            <Link to="/">Home</Link> &nbsp;/&nbsp; Contact Us
-          </p>
-        </div>
-      </div>
+    <main className="subpage-layout">
 
       <section className="contact-wrap" aria-label="Contact">
         <aside className="contact-info" aria-label="Contact information">
@@ -69,7 +60,7 @@ export default function Contact() {
             <span className="ornament">✦</span>
             <h2>Get In Touch</h2>
             <p className="contact-info-sub">
-              We'd love to hear about your dream wedding. Reach out and let's begin creating something unforgettable together.
+              We'd love to hear about your dream event. Reach out and let's begin creating something unforgettable together.
             </p>
             <div className="gold-line" style={{ margin: '20px 0 32px' }}></div>
 
@@ -77,7 +68,7 @@ export default function Contact() {
               <div className="info-icon" aria-hidden="true">📍</div>
               <div>
                 <h4>Our Studio</h4>
-                <p>107, Center Point, Sapna Sangeeta Road, Indore, MP</p>
+                <p>Dalauda, Mandsaur, Madhya Pradesh</p>
               </div>
             </div>
 
@@ -85,7 +76,7 @@ export default function Contact() {
               <div className="info-icon" aria-hidden="true">✉️</div>
               <div>
                 <h4>Email Us</h4>
-                <a href="mailto:info@velvetvows.in">info@velvetvows.in</a>
+                <a href="mailto:info@velvetvows.in">eventvelvetvows@gmail.com</a>
               </div>
             </div>
 
@@ -93,7 +84,7 @@ export default function Contact() {
               <div className="info-icon" aria-hidden="true">📞</div>
               <div>
                 <h4>Call Us</h4>
-                <a href="tel:+919203781838">+91 9203781838</a>
+                <a href="tel:+919203781838">+919302899270</a>
               </div>
             </div>
 
@@ -101,7 +92,7 @@ export default function Contact() {
               <div className="info-icon" aria-hidden="true">📷</div>
               <div>
                 <h4>Instagram</h4>
-                <a href="https://www.instagram.com/velvetvows.in" target="_blank" rel="noopener noreferrer">@velvetvows.wedding</a>
+                <a href="https://www.instagram.com/velvetvows.event?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer">velvetvows.event</a>
               </div>
             </div>
 
@@ -178,11 +169,13 @@ export default function Contact() {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="subject">Wedding Theme</label>
+                  <label htmlFor="subject">Event Type / Theme</label>
                   <select id="subject" name="subject" value={formData.subject} onChange={handleChange}>
                     <option value="royal-heritage">Royal Heritage Wedding</option>
                     <option value="traditional">Traditional Indian Wedding</option>
                     <option value="bollywood">Bollywood Story Wedding</option>
+                    <option value="corporate-gala">Elite Corporate Gala</option>
+                    <option value="social-milestone">Private Social Celebration</option>
                     <option value="other">Other / General Enquiry</option>
                   </select>
                 </div>
@@ -197,7 +190,7 @@ export default function Contact() {
                   value={formData.message}
                   onChange={handleChange}
                   className={errors.message ? 'input-error' : ''}
-                  placeholder="Tell us about your dream wedding — date, location, guest count, or anything you'd like us to know…"
+                  placeholder="Tell us about your dream event — date, location, event type, guest count, or anything you'd like us to know…"
                   required
                 />
                 {errors.message && <span className="field-error">{errors.message}</span>}

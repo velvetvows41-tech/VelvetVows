@@ -7,32 +7,39 @@ const { protect } = require('../middleware/auth');
 
 // Helper to save base64 string as file and return static path
 function saveBase64Image(base64Str) {
-  const matches = base64Str.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-  if (!matches || matches.length !== 3) {
-    return null; // Return null if not a valid base64 format (it might be a default URL like /images/hero1.jpg)
+  try {
+    const matches = base64Str.match(/^data:([^;]+);base64,([\s\S]+)$/);
+    if (!matches || matches.length !== 3) {
+      console.error('saveBase64Image: Invalid base64 string format');
+      return null; // Return null if not a valid base64 format
+    }
+
+    const imageType = matches[1];
+    const base64Data = matches[2].replace(/\s/g, ''); // strip out any formatting whitespaces
+    const buffer = Buffer.from(base64Data, 'base64');
+
+    // Determine file extension
+    let extension = 'jpg';
+    if (imageType.includes('png')) extension = 'png';
+    if (imageType.includes('gif')) extension = 'gif';
+    if (imageType.includes('webp')) extension = 'webp';
+    if (imageType.includes('svg')) extension = 'svg';
+
+    const filename = `img-${Date.now()}-${Math.round(Math.random() * 1e9)}.${extension}`;
+    const uploadDir = path.join(__dirname, '../uploads');
+    
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+
+    const filepath = path.join(uploadDir, filename);
+    fs.writeFileSync(filepath, buffer);
+
+    return `/uploads/${filename}`;
+  } catch (error) {
+    console.error('Error saving base64 image:', error);
+    return null;
   }
-
-  const imageType = matches[1];
-  const base64Data = matches[2];
-  const buffer = Buffer.from(base64Data, 'base64');
-
-  // Determine file extension
-  let extension = 'jpg';
-  if (imageType.includes('png')) extension = 'png';
-  if (imageType.includes('gif')) extension = 'gif';
-  if (imageType.includes('webp')) extension = 'webp';
-
-  const filename = `img-${Date.now()}-${Math.round(Math.random() * 1e9)}.${extension}`;
-  const uploadDir = path.join(__dirname, '../uploads');
-  
-  if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-  }
-
-  const filepath = path.join(uploadDir, filename);
-  fs.writeFileSync(filepath, buffer);
-
-  return `/uploads/${filename}`;
 }
 
 // @desc    Get items, optionally filtered by type
@@ -64,10 +71,13 @@ router.post('/', protect, async (req, res) => {
     for (const img of images) {
       let srcPath = img.src;
       // If it is a base64 string, decode and save as a real file
-      if (img.src.startsWith('data:image/')) {
+      if (img.src && img.src.startsWith('data:') && img.src.includes(';base64,')) {
         const savedPath = saveBase64Image(img.src);
         if (savedPath) {
           srcPath = savedPath;
+        } else {
+          // If we fail to save the file, throw an error to prevent DB corruption with huge base64 strings
+          throw new Error('Failed to save uploaded image file');
         }
       }
 

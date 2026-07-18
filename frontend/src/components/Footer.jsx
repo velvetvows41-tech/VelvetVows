@@ -12,12 +12,12 @@ export default function Footer() {
             Velvet Vows Wedding Planner – Where Luxury Meets Tradition. Creating unforgettable, bespoke wedding experiences across India.
           </p>
           <a
-            href="https://www.instagram.com/velvetvows.in"
+            href="https://www.instagram.com/velvetvows.event?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
             target="_blank"
             rel="noopener noreferrer"
             className="footer-insta"
           >
-            📷 @velvetvows.wedding
+            INSTAGRAM
           </a>
         </div>
 
@@ -43,7 +43,7 @@ export default function Footer() {
       </div>
       <div className="footer-divider"></div>
       <div className="footer-bottom">
-        <p>© {new Date().getFullYear()} Velvet Vows. All Rights Reserved. Crafted with love.</p>
+        <p>© {new Date().getFullYear()} Velvet Vows. All Rights Reserved.</p>
       </div>
     </footer>
   );

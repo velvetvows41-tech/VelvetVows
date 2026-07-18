@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useAdmin } from '../context/AdminContext';
+import AnimatedNumber from '../components/AnimatedNumber';
 
 // Default Fallbacks
 const defaultHeroImages = [
@@ -97,8 +98,58 @@ const getYoutubeId = (url) => {
   return w ? w[1] : /^[A-Za-z0-9_-]{11}$/.test(c) ? c : null;
 };
 
+function HomeServiceCard({ svc }) {
+  const [loaded, setLoaded] = useState(false);
+
+  return (
+    <div className="svc-card">
+      <div className={`svc-card-img ${loaded ? 'loaded' : 'loading'}`}>
+        {!loaded && (
+          <div className="svc-card-shimmer"></div>
+        )}
+        <img 
+          src={svc.image} 
+          alt={svc.title} 
+          loading="lazy" 
+          decoding="async"
+          onLoad={() => setLoaded(true)}
+          style={{ opacity: loaded ? 1 : 0, transition: 'opacity 0.6s ease-out' }}
+        />
+        <div className="svc-card-overlay">
+          <span className="svc-overlay-badge">{svc.badge}</span>
+        </div>
+      </div>
+      <div className="svc-card-body">
+        <h3>{svc.title}</h3>
+        <span className="svc-subtitle">{svc.badge}</span>
+        <div className="svc-divider"></div>
+        <p className="svc-desc">{svc.description}</p>
+      </div>
+    </div>
+  );
+}
+
 export default function Home() {
-  const { heroImages, galleryImages, youtubeUrl } = useAdmin();
+  const { heroImages, galleryImages, serviceImages, youtubeUrl } = useAdmin();
+
+  const displayServices = serviceImages.length > 0
+    ? serviceImages.map((img, index) => {
+        const defaultMeta = defaultServices[index] || {
+          badge: "EXCLUSIVE SERVICE",
+          title: img.label || `Custom Service ${index + 1}`,
+          subtitle: "Bespoke Curation",
+          description: "Custom curated services designed and executed by our expert hospitality professionals."
+        };
+        return {
+          id: img.id || index,
+          badge: defaultMeta.badge,
+          title: img.label || defaultMeta.title,
+          subtitle: defaultMeta.subtitle || defaultMeta.badge,
+          description: defaultMeta.description,
+          image: img.src
+        };
+      })
+    : defaultServices;
 
   // State for Hero Slider
   const [currentHero, setCurrentHero] = useState(0);
@@ -134,7 +185,21 @@ export default function Home() {
   // State for Gallery Lightbox
   const [lightboxImg, setLightboxImg] = useState(null);
   const activeGalleryImages = galleryImages.length > 0 ? galleryImages : defaultGalleryImages;
-  const marqueeImages = [...activeGalleryImages, ...activeGalleryImages]; // duplicate for marquee loop
+  
+  // Group gallery images into chunks of 3 for the curved hanging wire carousel
+  const wireChunks = [];
+  if (activeGalleryImages.length > 0) {
+    for (let i = 0; i < activeGalleryImages.length; i += 3) {
+      const chunk = activeGalleryImages.slice(i, i + 3);
+      // Pad out the last group to 3 cards using wraparound items if necessary
+      while (chunk.length < 3) {
+        chunk.push(activeGalleryImages[chunk.length % activeGalleryImages.length]);
+      }
+      wireChunks.push(chunk);
+    }
+  }
+  // Duplicate chunks 3 times to ensure a seamless infinite loop scrolling marquee width
+  const marqueeChunks = [...wireChunks, ...wireChunks, ...wireChunks];
 
   // YouTube Embed Url
   const youtubeId = getYoutubeId(youtubeUrl);
@@ -144,14 +209,11 @@ export default function Home() {
     <main>
       {/* 1. Hero Slider Section */}
       <section className="hero" aria-label="Welcome slideshow">
-        <div 
-          className="hero-slider" 
-          style={{ transform: `translateX(-${currentHero * 100}%)` }}
-        >
+        <div className="hero-slider-fade">
           {activeHeroImages.map((img, idx) => (
             <div 
               key={img.id || idx} 
-              className="hero-slide" 
+              className={`hero-slide-fade ${idx === currentHero ? 'hero-slide-fade--active' : ''}`}
               style={{ backgroundImage: `url(${img.src})` }}
               aria-label={img.label}
             ></div>
@@ -162,7 +224,7 @@ export default function Home() {
         <div className="hero-content">
           <p className="hero-eyebrow">✦ WELCOME TO ✦</p>
           <h1>VELVET VOWS</h1>
-          <p className="hero-sub">Where Every Love Story Becomes Legend</p>
+          <p className="hero-sub">Your Dream Event planned with Love and <strong>Perfection</strong></p>
           <Link to="/about" className="hero-cta">Discover Our Story</Link>
         </div>
 
@@ -195,9 +257,9 @@ export default function Home() {
 
       {/* 2. Tagline Strip */}
       <section className="tagline-strip">
-        <h2>Ready to Begin Your Wedding Journey?</h2>
-        <p>Let's craft a celebration as unique and beautiful as your love story.</p>
-        <Link to="/contact" className="tagline-link">Plan My Wedding</Link>
+        <h2>Ready to Begin Your Event Journey?</h2>
+        <p>Let's craft a celebration as unique and beautiful as your story.</p>
+        <Link to="/contact" className="tagline-link">Plan My Event</Link>
       </section>
 
       {/* 3. About Section wrap */}
@@ -213,19 +275,19 @@ export default function Home() {
 
           <div className="about-stats">
             <div className="stat-box">
-              <span className="stat-num">8+</span>
+              <span className="stat-num"><AnimatedNumber value="2+" /></span>
               <span className="stat-label">Years of Grace</span>
             </div>
             <div className="stat-box">
-              <span className="stat-num">150+</span>
-              <span className="stat-label">Weddings Crafted</span>
+              <span className="stat-num"><AnimatedNumber value="150+" /></span>
+              <span className="stat-label">Events Crafted</span>
             </div>
             <div className="stat-box">
-              <span className="stat-num">99%</span>
-              <span className="stat-label">Happy Couples</span>
+              <span className="stat-num"><AnimatedNumber value="99%" /></span>
+              <span className="stat-label">Happy Clients</span>
             </div>
             <div className="stat-box">
-              <span className="stat-num">12+</span>
+              <span className="stat-num"><AnimatedNumber value="12+" /></span>
               <span className="stat-label">Cities Served</span>
             </div>
           </div>
@@ -234,7 +296,7 @@ export default function Home() {
             <div className="about-block">
               <h3><span className="block-icon">✨</span> Our Philosophy</h3>
               <p>
-                A wedding is not just an event; it's a sacred narrative. We ensure your narrative is narrated with the highest degree of grandeur, precision, and heartfelt emotion, allowing you and your family to live every moment completely hassle-free.
+                Every grand milestone celebration is a sacred narrative. Whether it is an elite corporate gala, a high-profile social anniversary, or a royal wedding, we ensure your story is told with the highest degree of grandeur, precision, and heartfelt emotion, allowing you to live every moment completely hassle-free.
               </p>
             </div>
             <div className="about-block">
@@ -253,31 +315,116 @@ export default function Home() {
         </div>
       </section>
 
+      {/* 7. Wedding Moments Hanging Wire Infinite Carousel */}
+      <section className="gallery-section" aria-label="Photo gallery wire carousel">
+        <div className="section-title">
+          <span className="ornament">✦</span>
+          <h2>A Few MOMENTS</h2>
+          <p>A curated collection of love, joy, and timeless memories. Hover to focus or click to expand!</p>
+          <div className="gold-line"></div>
+        </div>
+
+        <div className="wire-carousel-outer">
+          <div 
+            className="wire-carousel-track"
+            style={{ animationDuration: `${Math.max(30, wireChunks.length * 9)}s` }}
+          >
+            {marqueeChunks.map((chunk, segmentIdx) => (
+              <div key={`wire-seg-${segmentIdx}`} className="wire-segment">
+                {/* Sagging gold cable SVG background */}
+                <svg className="wire-svg" viewBox="0 0 1000 200" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id={`gold-wire-${segmentIdx}`} x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#805b10" />
+                      <stop offset="30%" stopColor="#d4af37" />
+                      <stop offset="50%" stopColor="#f3e5ab" />
+                      <stop offset="70%" stopColor="#d4af37" />
+                      <stop offset="100%" stopColor="#805b10" />
+                    </linearGradient>
+                  </defs>
+                  {/* 1. Wire Shadow Path */}
+                  <path d="M 0 33 Q 500 133 1000 33" fill="none" stroke="rgba(74, 18, 26, 0.12)" strokeWidth="4.5" />
+                  {/* 2. Main Cable Core */}
+                  <path d="M 0 30 Q 500 130 1000 30" fill="none" stroke={`url(#gold-wire-${segmentIdx})`} strokeWidth="3" />
+                  {/* 3. Coiled rope specular highlight overlay */}
+                  <path d="M 0 30 Q 500 130 1000 30" fill="none" stroke="#fff9e6" strokeWidth="1.2" strokeDasharray="3,6" />
+                  {/* 4. Gold Peg Mounts at the anchor posts */}
+                  <circle cx="0" cy="30" r="7" fill="#805b10" stroke="#f3e5ab" strokeWidth="1.5" />
+                  <circle cx="1000" cy="30" r="7" fill="#805b10" stroke="#f3e5ab" strokeWidth="1.5" />
+                </svg>
+
+                {/* Card 1: Left */}
+                <div 
+                  className="wire-card wire-card--1" 
+                  onClick={() => setLightboxImg(chunk[0])}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`View ${chunk[0].label || 'Moment'}`}
+                  onKeyDown={(e) => e.key === 'Enter' && setLightboxImg(chunk[0])}
+                >
+                  <div className="wire-string"></div>
+                  <img src={chunk[0].src} alt={chunk[0].label || 'Moment'} loading="lazy" decoding="async" />
+                  <div className="wire-label">
+                    <span>{chunk[0].label || 'Velvet Moment'}</span>
+                  </div>
+                </div>
+
+                {/* Card 2: Center (Sagging lowest) */}
+                <div 
+                  className="wire-card wire-card--2" 
+                  onClick={() => setLightboxImg(chunk[1])}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`View ${chunk[1].label || 'Moment'}`}
+                  onKeyDown={(e) => e.key === 'Enter' && setLightboxImg(chunk[1])}
+                >
+                  <div className="wire-string"></div>
+                  <img src={chunk[1].src} alt={chunk[1].label || 'Moment'} loading="lazy" decoding="async" />
+                  <div className="wire-label">
+                    <span>{chunk[1].label || 'Velvet Moment'}</span>
+                  </div>
+                </div>
+
+                {/* Card 3: Right */}
+                <div 
+                  className="wire-card wire-card--3" 
+                  onClick={() => setLightboxImg(chunk[2])}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`View ${chunk[2].label || 'Moment'}`}
+                  onKeyDown={(e) => e.key === 'Enter' && setLightboxImg(chunk[2])}
+                >
+                  <div className="wire-string"></div>
+                  <img src={chunk[2].src} alt={chunk[2].label || 'Moment'} loading="lazy" decoding="async" />
+                  <div className="wire-label">
+                    <span>{chunk[2].label || 'Velvet Moment'}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {lightboxImg && (
+          <div className="lightbox" role="dialog" aria-modal="true" aria-label={lightboxImg.label} onClick={() => setLightboxImg(null)}>
+            <button className="lb-close" onClick={() => setLightboxImg(null)}>&times;</button>
+            <img src={lightboxImg.src} alt={lightboxImg.label} onClick={e => e.stopPropagation()} />
+          </div>
+        )}
+      </section>
+
       {/* 4. Services Grid section */}
       <section className="services-intro" style={{ backgroundColor: 'var(--cream)' }}>
         <span className="ornament">✦</span>
-        <h2>OUR SIGNATURE CELEBRATIONS</h2>
+        <h2>OUR SIGNATURE SERVICES</h2>
         <p>Bespoke themes custom tailored to reflect your identity and culture</p>
         <div className="gold-line"></div>
       </section>
 
       <section className="services-grid-wrap">
         <div className="services-grid">
-          {defaultServices.map((svc) => (
-            <div key={svc.id} className="svc-card">
-              <div className="svc-card-img">
-                <img src={svc.image} alt={svc.title} />
-                <div className="svc-card-overlay">
-                  <span className="svc-overlay-badge">{svc.badge}</span>
-                </div>
-              </div>
-              <div className="svc-card-body">
-                <h3>{svc.title}</h3>
-                <span className="svc-subtitle">{svc.badge}</span>
-                <div className="svc-divider"></div>
-                <p className="svc-desc">{svc.description}</p>
-              </div>
-            </div>
+          {displayServices.map((svc) => (
+            <HomeServiceCard key={svc.id} svc={svc} />
           ))}
         </div>
       </section>
@@ -286,7 +433,7 @@ export default function Home() {
       <section className="process-section" aria-label="Our process">
         <span className="ornament">✦</span>
         <h2>THE VELVET PROCESS</h2>
-        <p>How we bring your dream wedding to life step-by-step</p>
+        <p>How we bring your dream event to life step-by-step</p>
         <div className="gold-line"></div>
 
         <div className="process-grid">
@@ -314,7 +461,7 @@ export default function Home() {
       </section>
 
       {/* 6. Video Section */}
-      <section className="video-section" aria-label="Wedding highlights video">
+      <section className="video-section" aria-label="Event highlights video">
         <div className="section-title">
           <span className="ornament">✦</span>
           <h2>HIGHLIGHTS GALLERY</h2>
@@ -325,7 +472,7 @@ export default function Home() {
           <div className="video-wrap">
             <iframe 
               src={embedUrl}
-              title="Wedding Highlights"
+              title="Event Highlights"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
             ></iframe>
@@ -333,48 +480,7 @@ export default function Home() {
         ) : (
           <div className="video-placeholder">
             <span>🎬</span>
-            <p>No video added yet — paste a YouTube URL in the Admin Panel.</p>
-          </div>
-        )}
-      </section>
-
-      {/* 7. Wedding Moments Gallery Marquee */}
-      <section className="gallery-section" aria-label="Photo gallery marquee">
-        <div className="section-title">
-          <span className="ornament">✦</span>
-          <h2>A Few MOMENTS</h2>
-          <p>A curated collection of love, joy, and timeless memories</p>
-          <div className="gold-line"></div>
-        </div>
-
-        <div className="gallery-outer">
-          <div 
-            className="gallery-track"
-            style={{ animationDuration: `${Math.max(28, activeGalleryImages.length * 4)}s` }}
-          >
-            {marqueeImages.map((img, w) => (
-              <div 
-                key={`${img.id}-${w}`} 
-                className="g-card"
-                onClick={() => setLightboxImg(img)}
-                role="button"
-                tabIndex={0}
-                aria-label={`View ${img.label}`}
-                onKeyDown={(k) => k.key === 'Enter' && setLightboxImg(img)}
-              >
-                <img src={img.src} alt={img.label} loading="lazy" />
-                <div className="g-card-ov">
-                  <span>{img.label}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {lightboxImg && (
-          <div className="lightbox" role="dialog" aria-modal="true" aria-label={lightboxImg.label} onClick={() => setLightboxImg(null)}>
-            <button className="lb-close" onClick={() => setLightboxImg(null)}>&times;</button>
-            <img src={lightboxImg.src} alt={lightboxImg.label} onClick={e => e.stopPropagation()} />
+            <p>No video added yet</p>
           </div>
         )}
       </section>

@@ -6,7 +6,8 @@ const API_BASE = 'http://localhost:5000/api';
 
 const formatImgSrc = (src) => {
   if (src.startsWith('/uploads/')) {
-    return `http://localhost:5000${src}`;
+    const origin = API_BASE.replace('/api', '');
+    return `${origin}${src}`;
   }
   return src;
 };
@@ -26,20 +27,36 @@ export function AdminProvider({ children }) {
   // Fetch initial data
   const fetchData = useCallback(async () => {
     try {
-      // Get images
-      const imgRes = await fetch(`${API_BASE}/items`);
-      if (imgRes.ok) {
-        const items = await imgRes.json();
+      // Get images (Use sessionStorage cache if present)
+      const cachedItems = sessionStorage.getItem('velvet_items');
+      if (cachedItems) {
+        const items = JSON.parse(cachedItems);
         setHeroImages(items.filter(item => item.type === 'hero').map(i => ({ ...i, src: formatImgSrc(i.src) })));
         setGalleryImages(items.filter(item => item.type === 'gallery').map(i => ({ ...i, src: formatImgSrc(i.src) })));
         setServiceImages(items.filter(item => item.type === 'services').map(i => ({ ...i, src: formatImgSrc(i.src) })));
+      } else {
+        const imgRes = await fetch(`${API_BASE}/items`);
+        if (imgRes.ok) {
+          const items = await imgRes.json();
+          sessionStorage.setItem('velvet_items', JSON.stringify(items));
+          setHeroImages(items.filter(item => item.type === 'hero').map(i => ({ ...i, src: formatImgSrc(i.src) })));
+          setGalleryImages(items.filter(item => item.type === 'gallery').map(i => ({ ...i, src: formatImgSrc(i.src) })));
+          setServiceImages(items.filter(item => item.type === 'services').map(i => ({ ...i, src: formatImgSrc(i.src) })));
+        }
       }
 
-      // Get video url
-      const videoRes = await fetch(`${API_BASE}/video`);
-      if (videoRes.ok) {
-        const v = await videoRes.json();
-        setYoutubeUrl(v.url || '');
+      // Get video url (Use sessionStorage cache if present)
+      const cachedVideo = sessionStorage.getItem('velvet_video_url');
+      if (cachedVideo !== null) {
+        setYoutubeUrl(cachedVideo);
+      } else {
+        const videoRes = await fetch(`${API_BASE}/video`);
+        if (videoRes.ok) {
+          const v = await videoRes.json();
+          const url = v.url || '';
+          sessionStorage.setItem('velvet_video_url', url);
+          setYoutubeUrl(url);
+        }
       }
     } catch (err) {
       console.error('Error fetching public data:', err);
@@ -112,7 +129,7 @@ export function AdminProvider({ children }) {
   // Add/Publish images
   const addImages = useCallback(async (type, newImages) => {
     const token = localStorage.getItem('velvet_token');
-    if (!token) return;
+    if (!token) return false;
 
     setIsLoading(true);
     try {
@@ -126,15 +143,22 @@ export function AdminProvider({ children }) {
       });
 
       if (res.ok) {
-        // Refetch images
+        // Clear session cache and refetch images
+        sessionStorage.removeItem('velvet_items');
         await fetchData();
+        return true;
       }
+      if (res.status === 401) {
+        logout();
+      }
+      return false;
     } catch (err) {
       console.error('Error adding images:', err);
+      return false;
     } finally {
       setIsLoading(false);
     }
-  }, [fetchData]);
+  }, [fetchData, logout]);
 
   // Delete image
   const deleteImage = useCallback(async (type, id) => {
@@ -150,12 +174,15 @@ export function AdminProvider({ children }) {
       });
 
       if (res.ok) {
+        sessionStorage.removeItem('velvet_items');
         await fetchData();
+      } else if (res.status === 401) {
+        logout();
       }
     } catch (err) {
       console.error('Error deleting image:', err);
     }
-  }, [fetchData]);
+  }, [fetchData, logout]);
 
   // Update label
   const updateImageLabel = useCallback(async (type, id, label) => {
@@ -173,12 +200,15 @@ export function AdminProvider({ children }) {
       });
 
       if (res.ok) {
+        sessionStorage.removeItem('velvet_items');
         await fetchData();
+      } else if (res.status === 401) {
+        logout();
       }
     } catch (err) {
       console.error('Error updating label:', err);
     }
-  }, [fetchData]);
+  }, [fetchData, logout]);
 
   // Clear all images of a type
   const clearAll = useCallback(async (type) => {
@@ -194,12 +224,15 @@ export function AdminProvider({ children }) {
       });
 
       if (res.ok) {
+        sessionStorage.removeItem('velvet_items');
         await fetchData();
+      } else if (res.status === 401) {
+        logout();
       }
     } catch (err) {
       console.error('Error clearing images:', err);
     }
-  }, [fetchData]);
+  }, [fetchData, logout]);
 
   // Save YouTube Video URL
   const saveYoutubeUrl = useCallback(async (url) => {
@@ -218,12 +251,16 @@ export function AdminProvider({ children }) {
 
       if (res.ok) {
         const v = await res.json();
-        setYoutubeUrl(v.url || '');
+        const newUrl = v.url || '';
+        sessionStorage.setItem('velvet_video_url', newUrl);
+        setYoutubeUrl(newUrl);
+      } else if (res.status === 401) {
+        logout();
       }
     } catch (err) {
       console.error('Error saving YouTube URL:', err);
     }
-  }, []);
+  }, [logout]);
 
   // Submit Enquiry
   const submitEnquiry = useCallback(async (formData) => {
@@ -255,11 +292,13 @@ export function AdminProvider({ children }) {
 
       if (res.ok) {
         await fetchEnquiries();
+      } else if (res.status === 401) {
+        logout();
       }
     } catch (err) {
       console.error('Error deleting enquiry:', err);
     }
-  }, [fetchEnquiries]);
+  }, [fetchEnquiries, logout]);
 
   return (
     <AdminContext.Provider
