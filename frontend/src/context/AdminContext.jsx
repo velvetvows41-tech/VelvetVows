@@ -2,7 +2,15 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 
 const AdminContext = createContext(null);
 
-const API_BASE = 'http://localhost:5000/api';
+// Dynamically resolve API base:
+// 1. Checks VITE_API_BASE environment variable (ideal for production builds)
+// 2. Falls back to localhost:5000 for local development
+// 3. Defaults to the custom domain's host /api under window.location.origin
+const API_BASE = import.meta.env.VITE_API_BASE || (
+  window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:5000/api'
+    : `${window.location.origin}/api`
+);
 
 const formatImgSrc = (src) => {
   if (src.startsWith('/uploads/')) {
