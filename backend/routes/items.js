@@ -7,6 +7,10 @@ const { protect } = require('../middleware/auth');
 
 // Helper to save base64 string as file and return static path
 function saveBase64Image(base64Str) {
+  // If running in Vercel Serverless environment, store the raw base64 string directly in MongoDB Atlas
+  if (process.env.VERCEL) {
+    return base64Str;
+  }
   try {
     const matches = base64Str.match(/^data:([^;]+);base64,([\s\S]+)$/);
     if (!matches || matches.length !== 3) {
@@ -129,8 +133,12 @@ router.delete('/:id', protect, async (req, res) => {
     // Try to delete the physical file if it exists in uploads directory
     if (item.src.startsWith('/uploads/')) {
       const filepath = path.join(__dirname, '..', item.src);
-      if (fs.existsSync(filepath)) {
-        fs.unlinkSync(filepath);
+      try {
+        if (fs.existsSync(filepath)) {
+          fs.unlinkSync(filepath);
+        }
+      } catch (err) {
+        console.warn('Unable to delete physical file (possibly running on serverless Vercel):', err.message);
       }
     }
 
@@ -154,8 +162,12 @@ router.delete('/', protect, async (req, res) => {
     for (const item of items) {
       if (item.src.startsWith('/uploads/')) {
         const filepath = path.join(__dirname, '..', item.src);
-        if (fs.existsSync(filepath)) {
-          fs.unlinkSync(filepath);
+        try {
+          if (fs.existsSync(filepath)) {
+            fs.unlinkSync(filepath);
+          }
+        } catch (err) {
+          console.warn('Unable to delete physical file (possibly running on serverless Vercel):', err.message);
         }
       }
     }
