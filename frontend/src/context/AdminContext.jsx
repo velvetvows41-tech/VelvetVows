@@ -12,6 +12,11 @@ const API_BASE = import.meta.env.VITE_API_BASE || (
     : `${window.location.origin}/api`
 );
 
+// In-memory caching variables to optimize tab-session navigation 
+// while ensuring page refreshes and tab closures fetch fresh data.
+let memoizedItems = null;
+let memoizedVideoUrl = null;
+
 const formatImgSrc = (src) => {
   if (src.startsWith('/uploads/')) {
     const origin = API_BASE.replace('/api', '');
@@ -35,10 +40,9 @@ export function AdminProvider({ children }) {
   // Fetch initial data
   const fetchData = useCallback(async () => {
     try {
-      // Get images (Use sessionStorage cache if present)
-      const cachedItems = sessionStorage.getItem('velvet_items');
-      if (cachedItems) {
-        const items = JSON.parse(cachedItems);
+      // Get images (Use in-memory cache if present)
+      if (memoizedItems) {
+        const items = memoizedItems;
         setHeroImages(items.filter(item => item.type === 'hero').map(i => ({ ...i, src: formatImgSrc(i.src) })));
         setGalleryImages(items.filter(item => item.type === 'gallery').map(i => ({ ...i, src: formatImgSrc(i.src) })));
         setServiceImages(items.filter(item => item.type === 'services').map(i => ({ ...i, src: formatImgSrc(i.src) })));
@@ -46,23 +50,22 @@ export function AdminProvider({ children }) {
         const imgRes = await fetch(`${API_BASE}/items`);
         if (imgRes.ok) {
           const items = await imgRes.json();
-          sessionStorage.setItem('velvet_items', JSON.stringify(items));
+          memoizedItems = items;
           setHeroImages(items.filter(item => item.type === 'hero').map(i => ({ ...i, src: formatImgSrc(i.src) })));
           setGalleryImages(items.filter(item => item.type === 'gallery').map(i => ({ ...i, src: formatImgSrc(i.src) })));
           setServiceImages(items.filter(item => item.type === 'services').map(i => ({ ...i, src: formatImgSrc(i.src) })));
         }
       }
 
-      // Get video url (Use sessionStorage cache if present)
-      const cachedVideo = sessionStorage.getItem('velvet_video_url');
-      if (cachedVideo !== null) {
-        setYoutubeUrl(cachedVideo);
+      // Get video url (Use in-memory cache if present)
+      if (memoizedVideoUrl !== null) {
+        setYoutubeUrl(memoizedVideoUrl);
       } else {
         const videoRes = await fetch(`${API_BASE}/video`);
         if (videoRes.ok) {
           const v = await videoRes.json();
           const url = v.url || '';
-          sessionStorage.setItem('velvet_video_url', url);
+          memoizedVideoUrl = url;
           setYoutubeUrl(url);
         }
       }
@@ -151,8 +154,8 @@ export function AdminProvider({ children }) {
       });
 
       if (res.ok) {
-        // Clear session cache and refetch images
-        sessionStorage.removeItem('velvet_items');
+        // Clear in-memory cache and refetch images
+        memoizedItems = null;
         await fetchData();
         return true;
       }
@@ -182,7 +185,7 @@ export function AdminProvider({ children }) {
       });
 
       if (res.ok) {
-        sessionStorage.removeItem('velvet_items');
+        memoizedItems = null;
         await fetchData();
       } else if (res.status === 401) {
         logout();
@@ -208,7 +211,7 @@ export function AdminProvider({ children }) {
       });
 
       if (res.ok) {
-        sessionStorage.removeItem('velvet_items');
+        memoizedItems = null;
         await fetchData();
       } else if (res.status === 401) {
         logout();
@@ -232,7 +235,7 @@ export function AdminProvider({ children }) {
       });
 
       if (res.ok) {
-        sessionStorage.removeItem('velvet_items');
+        memoizedItems = null;
         await fetchData();
       } else if (res.status === 401) {
         logout();
@@ -260,7 +263,7 @@ export function AdminProvider({ children }) {
       if (res.ok) {
         const v = await res.json();
         const newUrl = v.url || '';
-        sessionStorage.setItem('velvet_video_url', newUrl);
+        memoizedVideoUrl = newUrl;
         setYoutubeUrl(newUrl);
       } else if (res.status === 401) {
         logout();

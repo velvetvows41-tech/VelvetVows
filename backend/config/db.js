@@ -2,13 +2,14 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI);
+    const uri = process.env.MONGO_URI || process.env.MONGODB_URI;
+    if (!uri) {
+      throw new Error('Database connection string is missing. Please define MONGO_URI or MONGODB_URI in your Vercel Environment Variables.');
+    }
+    const conn = await mongoose.connect(uri);
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
     console.error(`Error connecting to MongoDB: ${error.message}`);
-    console.error(`[Troubleshooting] Please check if:`);
-    console.error(`  1. Your current IP address is whitelisted in MongoDB Atlas (Network Access).`);
-    console.error(`  2. Or if you have a local MongoDB server running and MONGO_URI in backend/.env points to it.`);
   }
 };
 
