@@ -24,11 +24,19 @@ app.use(express.json({ limit: '100mb' })); // Support base64 image strings
 app.use(express.urlencoded({ limit: '100mb', extended: true }));
 
 // Middleware to ensure DB connection is ready before processing API requests
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
   // Allow root requests and static uploads
   if (req.path === '/' || req.path.startsWith('/uploads')) {
     return next();
   }
+  
+  // In serverless environments, ensure we re-attempt connection if the previous check failed
+  try {
+    await connectDB();
+  } catch (err) {
+    console.error('Failed to trigger connectDB in request middleware:', err.message);
+  }
+
   const state = mongoose.connection.readyState;
   if (state !== 1 && state !== 2) {
     return res.status(503).json({
