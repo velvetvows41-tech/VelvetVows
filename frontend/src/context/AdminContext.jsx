@@ -12,6 +12,22 @@ const API_BASE = import.meta.env.VITE_API_BASE || (
     : `${window.location.origin}/api`
 );
 
+// Instantly pre-fetch items and video URL at the module level as soon as this script is loaded.
+// This executes the request way before React mounts and enters its rendering cycle.
+const initialItemsPromise = fetch(`${API_BASE}/items`)
+  .then(res => res.ok ? res.json() : null)
+  .catch(err => {
+    console.error('Module-level pre-fetch items error:', err);
+    return null;
+  });
+
+const initialVideoPromise = fetch(`${API_BASE}/video`)
+  .then(res => res.ok ? res.json() : null)
+  .catch(err => {
+    console.error('Module-level pre-fetch video error:', err);
+    return null;
+  });
+
 const formatImgSrc = (src) => {
   if (src.startsWith('/uploads/')) {
     const origin = API_BASE.replace('/api', '');
@@ -77,24 +93,43 @@ export function AdminProvider({ children }) {
   const [enquiries, setEnquiries] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Fetch initial data
-  const fetchData = useCallback(async () => {
+  // Fetch initial data (can resolve the pre-fetched promises on mount)
+  const fetchData = useCallback(async (isInitial = false) => {
     try {
-      // 1. Fetch fresh data in the background and update the state + cache
-      const imgRes = await fetch(`${API_BASE}/items`);
-      if (imgRes.ok) {
-        const items = await imgRes.json();
+      let items = null;
+      if (isInitial) {
+        items = await initialItemsPromise;
+      }
+
+      // Fallback: if pre-fetch was not ready or we are doing a manual refetch
+      if (!items) {
+        const imgRes = await fetch(`${API_BASE}/items`);
+        if (imgRes.ok) {
+          items = await imgRes.json();
+        }
+      }
+
+      if (items) {
         localStorage.setItem('velvet_items', JSON.stringify(items));
         setHeroImages(items.filter(item => item.type === 'hero').map(i => ({ ...i, src: formatImgSrc(i.src) })));
         setGalleryImages(items.filter(item => item.type === 'gallery').map(i => ({ ...i, src: formatImgSrc(i.src) })));
         setServiceImages(items.filter(item => item.type === 'services').map(i => ({ ...i, src: formatImgSrc(i.src) })));
       }
 
-      // 2. Fetch fresh video url in the background and update the state + cache
-      const videoRes = await fetch(`${API_BASE}/video`);
-      if (videoRes.ok) {
-        const v = await videoRes.json();
-        const url = v.url || '';
+      let videoData = null;
+      if (isInitial) {
+        videoData = await initialVideoPromise;
+      }
+
+      if (!videoData) {
+        const videoRes = await fetch(`${API_BASE}/video`);
+        if (videoRes.ok) {
+          videoData = await videoRes.json();
+        }
+      }
+
+      if (videoData) {
+        const url = videoData.url || '';
         localStorage.setItem('velvet_video_url', url);
         setYoutubeUrl(url);
       }
@@ -124,7 +159,7 @@ export function AdminProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    fetchData();
+    fetchData(true);
   }, [fetchData]);
 
   useEffect(() => {
