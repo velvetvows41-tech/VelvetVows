@@ -5,45 +5,9 @@ const path = require('path');
 const Item = require('../models/Item');
 const { protect } = require('../middleware/auth');
 
-// Helper to save base64 string as file and return static path
+// Helper to save base64 string as file and return static path (Always store base64 in MongoDB for full serverless consistency)
 function saveBase64Image(base64Str) {
-  // If running in Vercel Serverless environment, store the raw base64 string directly in MongoDB Atlas
-  if (process.env.VERCEL) {
-    return base64Str;
-  }
-  try {
-    const matches = base64Str.match(/^data:([^;]+);base64,([\s\S]+)$/);
-    if (!matches || matches.length !== 3) {
-      console.error('saveBase64Image: Invalid base64 string format');
-      return null; // Return null if not a valid base64 format
-    }
-
-    const imageType = matches[1];
-    const base64Data = matches[2].replace(/\s/g, ''); // strip out any formatting whitespaces
-    const buffer = Buffer.from(base64Data, 'base64');
-
-    // Determine file extension
-    let extension = 'jpg';
-    if (imageType.includes('png')) extension = 'png';
-    if (imageType.includes('gif')) extension = 'gif';
-    if (imageType.includes('webp')) extension = 'webp';
-    if (imageType.includes('svg')) extension = 'svg';
-
-    const filename = `img-${Date.now()}-${Math.round(Math.random() * 1e9)}.${extension}`;
-    const uploadDir = path.join(__dirname, '../uploads');
-    
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-
-    const filepath = path.join(uploadDir, filename);
-    fs.writeFileSync(filepath, buffer);
-
-    return `/uploads/${filename}`;
-  } catch (error) {
-    console.error('Error saving base64 image:', error);
-    return null;
-  }
+  return base64Str;
 }
 
 // @desc    Get items, optionally filtered by type
