@@ -1773,6 +1773,12 @@ body {
   .contact-wrap {
     grid-template-columns: 1fr;
   }
+  .contact-form-panel {
+    order: 1; /* Form on top */
+  }
+  .contact-info {
+    order: 2; /* Info list below */
+  }
   .contact-info,
   .contact-form-panel {
     padding: 50px 32px;
@@ -3558,9 +3564,9 @@ h1, h2, h3, h4, h5, h6 {
   transition: opacity 1.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 10s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-/* Luxurious center-focused vignette overlay */
+/* Luxurious center-focused vignette overlay - Darkened for high text contrast */
 .hero-overlay {
-  background: radial-gradient(circle, rgba(28, 5, 8, 0.1) 0%, rgba(28, 5, 8, 0.4) 60%, rgba(28, 5, 8, 0.75) 100%) !important;
+  background: linear-gradient(180deg, rgba(20, 10, 12, 0.45) 0%, rgba(20, 10, 12, 0.6) 50%, rgba(20, 10, 12, 0.8) 100%) !important;
   z-index: 2 !important;
 }
 
@@ -3592,17 +3598,20 @@ h1, h2, h3, h4, h5, h6 {
   font-size: clamp(2.5rem, 7vw, 5.2rem) !important;
   font-weight: 700 !important;
   letter-spacing: clamp(8px, 2.5vw, 16px) !important;
-  text-shadow: 0 10px 40px rgba(0, 0, 0, 0.6) !important;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.85), 0 15px 45px rgba(0, 0, 0, 0.6) !important;
   margin-bottom: 24px !important;
   line-height: 1.1 !important;
+  background: none !important;
+  -webkit-text-fill-color: var(--gold) !important;
+  color: var(--gold) !important;
 }
 
 .hero-sub {
   font-size: clamp(1.1rem, 2vw, 1.6rem) !important;
   max-width: 640px !important;
   margin: 0 auto 36px !important;
-  text-shadow: 0 4px 15px rgba(0, 0, 0, 0.5) !important;
-  color: rgba(255, 255, 255, 0.9) !important;
+  text-shadow: 0 3px 8px rgba(0, 0, 0, 0.85), 0 10px 25px rgba(0, 0, 0, 0.55) !important;
+  color: rgba(255, 255, 255, 0.95) !important; /* Off-white */
   line-height: 1.6 !important;
 }
 
@@ -3885,3 +3894,381 @@ h1, h2, h3, h4, h5, h6 {
 .services-cta h3, .about-cta h3, .video-section h2, .footer-inner h3, .footer-inner h4, .footer-inner a {
   color: var(--gold-light) !important;
 }
+
+/* Mobile Interface Optimizations for Admin Dashboard */
+@media (max-width: 860px) {
+  .admin-topbar {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+    text-align: center;
+    padding: 15px 20px;
+  }
+  
+  .admin-topbar-left {
+    justify-content: center;
+  }
+  
+  .admin-topbar-right {
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .admin-topbar-right a, 
+  .admin-topbar-right button {
+    flex: 1;
+    justify-content: center;
+    font-size: 0.8rem;
+    padding: 8px 16px;
+  }
+
+  /* Horizontal scrolling navigation tabs on mobile for modern look */
+  .admin-tabs {
+    padding: 16px 20px 0;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+    display: flex;
+    flex-wrap: nowrap !important;
+    gap: 8px;
+    border-bottom: 1.5px solid rgba(184, 150, 46, 0.2);
+  }
+  
+  .admin-tabs::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+  }
+
+  .admin-tab {
+    flex: 0 0 auto;
+    padding: 10px 18px;
+    border-radius: 8px 8px 0 0;
+    border: 1.5px solid rgba(184, 150, 46, 0.2) !important;
+    border-bottom: none !important;
+    margin-bottom: 0;
+    font-size: 0.68rem;
+    letter-spacing: 1px;
+  }
+
+  .admin-tab--active {
+    border-color: rgba(184, 150, 46, 0.4) !important;
+    border-bottom: 2.5px solid #fff !important;
+    background: #fff !important;
+    color: var(--brown) !important;
+    position: relative;
+    top: 1.5px;
+    z-index: 2;
+  }
+
+  .admin-panel-wrap {
+    padding: 16px 20px;
+  }
+
+  .admin-stats-row {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px;
+    padding: 16px 20px 0 !important;
+  }
+
+  .admin-stat-card {
+    padding: 16px 12px;
+  }
+
+  /* Responsive grids inside panels */
+  .dash-pending-row,
+  .ig-thumbs-grid {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)) !important;
+    gap: 12px !important;
+  }
+
+  .ig-thumb {
+    padding: 10px !important;
+  }
+
+  /* Make forms and inputs mobile friendly */
+  .yt-input-row {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch !important;
+  }
+
+  .yt-input {
+    width: 100% !important;
+  }
+
+  .yt-save-btn {
+    width: 100% !important;
+    justify-content: center;
+  }
+
+  /* Client Enquiries Table styling on mobile */
+  .dash-panel-body table {
+    min-width: 100% !important;
+    display: block;
+  }
+
+  .dash-panel-body thead {
+    display: none; /* Hide header rows on mobile cards view */
+  }
+
+  .dash-panel-body tbody,
+  .dash-panel-body tr {
+    display: block;
+    width: 100%;
+  }
+
+  .dash-panel-body tr {
+    border-bottom: 2px solid rgba(184, 150, 46, 0.15);
+    padding: 16px 12px;
+    margin-bottom: 12px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+  }
+
+  .dash-panel-body td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0 !important;
+    border: none !important;
+    font-size: 0.8rem;
+    text-align: right;
+  }
+
+  .dash-panel-body td:before {
+    content: attr(data-label);
+    font-family: Cinzel, serif;
+    font-size: 0.72rem;
+    color: var(--brown);
+    letter-spacing: 1px;
+    text-align: left;
+    font-weight: 600;
+  }
+
+  .dash-panel-body td button {
+    width: 100%;
+    margin-top: 10px;
+    justify-content: center;
+  }
+}
+
+/* Floral Floating Petals Animation Styles */
+.floral-petals-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 2; /* Render on top of background images but behind text overlays */
+  perspective: 1000px; /* Crucial for realistic 3D tumbling physics */
+}
+
+.petal {
+  position: absolute;
+  top: -10%;
+  pointer-events: none;
+  animation: fallPetal 15s linear infinite;
+  will-change: transform, top, left, opacity;
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.12));
+}
+
+/* 1. Rose Petals (Luxurious soft crimson/pink) */
+.petal:nth-child(3n+1) {
+  background: linear-gradient(135deg, rgba(255, 182, 193, 0.95) 0%, rgba(244, 143, 177, 0.6) 50%, rgba(136, 14, 79, 0.25) 100%);
+  border-radius: 70% 50% 70% 40%;
+  box-shadow: inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.7), 
+              inset -1px -1px 2px rgba(136, 14, 79, 0.3);
+}
+
+/* 2. Marigold Petals (Traditional Indian wedding golden-orange) */
+.petal:nth-child(3n+2) {
+  background: linear-gradient(135deg, rgba(254, 213, 91, 0.95) 0%, rgba(251, 140, 0, 0.65) 60%, rgba(230, 81, 0, 0.2) 100%);
+  border-radius: 60% 40% 70% 30%;
+  box-shadow: inset 1px 1.5px 2px rgba(255, 255, 255, 0.8),
+              inset -1px -1.5px 2px rgba(183, 28, 28, 0.25);
+}
+
+/* 3. Jasmine Petals (Delicate soft cream/white) */
+.petal:nth-child(3n+3) {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(245, 245, 220, 0.65) 70%, rgba(212, 175, 55, 0.25) 100%);
+  border-radius: 50% 50% 50% 50% / 80% 80% 20% 20%; /* Realistic tear-drop jasmine shape */
+  box-shadow: inset 1px 1px 2px rgba(255, 255, 255, 0.9),
+              inset -1px -1px 2px rgba(184, 150, 46, 0.2);
+}
+
+/* 4. Green Leaves (Foliage accents) */
+.petal:nth-child(4n) {
+  background: linear-gradient(135deg, rgba(165, 214, 167, 0.85) 0%, rgba(76, 175, 80, 0.45) 60%, rgba(27, 94, 32, 0.2) 100%);
+  border-radius: 85% 0 85% 0; /* Leaf shape */
+  box-shadow: inset 1.5px 1px 2px rgba(255, 255, 255, 0.5),
+              inset -1px -1px 2px rgba(27, 94, 32, 0.3);
+}
+
+@keyframes fallPetal {
+  0% {
+    top: -10%;
+    transform: translate3d(0, 0, 0) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(0.7);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.9;
+  }
+  25% {
+    transform: translate3d(40px, 0, 0) rotateX(90deg) rotateY(120deg) rotateZ(45deg) scale(0.8);
+  }
+  50% {
+    transform: translate3d(-40px, 0, 0) rotateX(180deg) rotateY(240deg) rotateZ(90deg) scale(0.9);
+  }
+  75% {
+    transform: translate3d(50px, 0, 0) rotateX(270deg) rotateY(360deg) rotateZ(135deg) scale(1.0);
+  }
+  100% {
+    top: 110%;
+    transform: translate3d(-30px, 0, 0) rotateX(360deg) rotateY(480deg) rotateZ(180deg) scale(1.1);
+    opacity: 0;
+  }
+}
+
+/* Mobile Hero & Overall Website Responsiveness Improvements */
+@media (max-width: 600px) {
+  .hero {
+    min-height: 480px !important;
+    height: 75vh !important; /* Visual cue that there is more content below */
+  }
+
+  .hero-content h1 {
+    font-size: 2.1rem !important; /* Smaller on mobile to prevent awkward text wrapping */
+    letter-spacing: 4px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .hero-sub {
+    font-size: 0.95rem !important;
+    margin-bottom: 24px !important;
+    padding: 0 10px !important;
+  }
+
+  .hero-cta {
+    padding: 12px 30px !important;
+    font-size: 0.72rem !important;
+    letter-spacing: 2px !important;
+  }
+
+  /* Make sure the falling petals size down on mobile so they don't block the content */
+  .petal {
+    opacity: 0.65 !important;
+  }
+}
+
+/* Decorative Watercolor Flower Accents */
+.floral-accent {
+  position: absolute;
+  width: 140px;
+  height: 140px;
+  background-image: url('/images/watercolor_flowers.jpg');
+  background-size: cover;
+  background-position: center;
+  mix-blend-mode: multiply; /* Removes white background seamlessly */
+  pointer-events: none;
+  opacity: 0.85;
+  z-index: 10;
+  transition: transform 0.8s ease-in-out;
+}
+
+/* Float/sway animation on parent hover */
+.about-card:hover .floral-accent,
+.contact-wrap:hover .floral-accent,
+.services-intro:hover .floral-accent {
+  transform: scale(1.06) rotate(6deg);
+}
+
+.floral-accent--top-right {
+  top: -15px;
+  right: -15px;
+  transform: rotate(0deg);
+}
+
+.floral-accent--bottom-left {
+  bottom: -15px;
+  left: -15px;
+  transform: rotate(180deg);
+}
+
+.floral-accent--top-left {
+  top: -20px;
+  left: -20px;
+  transform: rotate(270deg);
+  width: 120px;
+  height: 120px;
+}
+
+@media (max-width: 600px) {
+  /* Scale down corner floral accents on small screens so they don't crowd content */
+  .floral-accent {
+    width: 90px !important;
+    height: 90px !important;
+    opacity: 0.6 !important;
+  }
+  .floral-accent--top-right {
+    top: -5px !important;
+    right: -5px !important;
+  }
+  .floral-accent--bottom-left {
+    bottom: -5px !important;
+    left: -5px !important;
+  }
+  .floral-accent--top-left {
+    top: -10px !important;
+    left: -10px !important;
+    width: 80px !important;
+    height: 80px !important;
+  }
+}
+
+/* Curated Showcase Sections & Image zoom styles */
+.portfolio-showcase-section {
+  background: var(--cream);
+  padding: 100px 24px;
+}
+
+.zoom-hover-img {
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.zoom-hover-img:hover {
+  transform: scale(1.05) !important;
+}
+
+@media (min-width: 769px) {
+  .showcase-item--reverse .showcase-info {
+    order: 2 !important;
+    padding-left: 20px;
+  }
+  .showcase-item--reverse .showcase-media-container {
+    order: 1 !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .ig-delete {
+    opacity: 1 !important;
+  }
+  .showcase-item {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+    text-align: center;
+  }
+  .showcase-info {
+    align-items: center;
+    text-align: center;
+  }
+  .showcase-info .tagline-link {
+    align-self: center !important;
+  }
+}
+
+

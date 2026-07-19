@@ -19,6 +19,17 @@ const EnquirySchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
+  eventDate: {
+    type: String,
+    trim: true,
+  },
+  location: {
+    type: String,
+    trim: true,
+  },
+  guestCount: {
+    type: Number,
+  },
   message: {
     type: String,
     required: true,

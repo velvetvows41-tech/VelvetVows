@@ -9,6 +9,7 @@ const connectDB = require('./config/db');
 const User = require('./models/User');
 const Item = require('./models/Item');
 const Video = require('./models/Video');
+const Stats = require('./models/Stats');
 
 // Load environment variables
 dotenv.config();
@@ -53,6 +54,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/items', require('./routes/items'));
 app.use('/api/video', require('./routes/video'));
+app.use('/api/stats', require('./routes/stats'));
 app.use('/api/enquiries', require('./routes/enquiries'));
 
 // Serve frontend build static files in production if needed,
@@ -90,6 +92,20 @@ const seedData = async () => {
       });
       await defaultVideo.save();
       console.log('Default video URL seeded!');
+    }
+
+    // 4. Seed default stats if none exist
+    const statsCount = await Stats.countDocuments();
+    if (statsCount === 0) {
+      console.log('Seeding default stats values...');
+      const defaultStats = new Stats({
+        yearsOfGrace: '2+',
+        eventsCrafted: '150+',
+        happyClients: '99%',
+        citiesServed: '12+'
+      });
+      await defaultStats.save();
+      console.log('Default stats seeded!');
     }
   } catch (error) {
     console.error('Error seeding data:', error);

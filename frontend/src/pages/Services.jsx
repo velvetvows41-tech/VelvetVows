@@ -5,32 +5,32 @@ import { useAdmin } from '../context/AdminContext';
 const services = [
   {
     id: 1,
-    badge: "BESPOKE PLANNING",
-    title: "Wedding Planning",
+    badge: "BESPOKE CURATION",
+    title: "Wedding Curation",
     subtitle: "End-to-End Conceptualization",
-    description: "From layout designing and budget tracking to vendor agreements, we shape your dream celebration from the ground up with absolute detail and care.",
+    description: "From architectural floor plans and visual curation to custom vendor agreements, we design your milestone celebrations with meticulous attention to detail.",
     image: ""
   },
   {
     id: 2,
     badge: "ELITE CELEBRATIONS",
-    title: "Social & Corporate Events",
+    title: "Social & Corporate Galas",
     subtitle: "Unforgettable Milestones",
-    description: "Bespoke styling and execution for high-profile social galas, birthdays, anniversaries, and corporate events with luxury hospitality and soundscapes.",
+    description: "Bespoke spatial design and execution for high-profile anniversaries, luxury birthdays, and corporate galas with premium hospitality.",
     image: ""
   },
   {
     id: 3,
     badge: "ROYAL HOSPITALITY",
-    title: "Hospitality Desk Management",
+    title: "Hospitality Desk Curation",
     subtitle: "Warm & Seamless Welcomes",
-    description: "Dedicated coordinators managing 24/7 guest check-in desks, key card handovers, room itinerary bags, and personal host supports at the hotel.",
+    description: "Dedicated coordinators managing 24/7 guest check-in desks, key card handovers, custom itinerary bags, and personal host supports.",
     image: ""
   },
   {
     id: 4,
     badge: "PERSONALIZED ASSISTANCE",
-    title: "Guest Coordination",
+    title: "Guest Curation & RSVP Logs",
     subtitle: "RSVP & Comfort Curation",
     description: "Handling digital RSVPs, family travel schedules, luggage tagging, and arranging welcome hampers and cards for every guest.",
     image: ""
@@ -38,15 +38,15 @@ const services = [
   {
     id: 5,
     badge: "LUXURY DESIGN",
-    title: "Venue & Decor Management",
+    title: "Venue & Spatial Design",
     subtitle: "Scenic Scenery & Lighting",
-    description: "Scouting heritage palaces and crafting grand floral avenues, cascading chandeliers, luxury mandaps, and high-fidelity stage designs.",
+    description: "Scouting historic heritage locations and crafting grand floral avenues, cascading chandeliers, luxury mandaps, and high-fidelity stage designs.",
     image: ""
   },
   {
     id: 6,
     badge: "LOGISTICS & TRAVEL",
-    title: "Guest Transportation Support",
+    title: "Guest Logistics Support",
     subtitle: "Airport Pickups & Luxury Fleet",
     description: "Seamless airport and railway pickups with premium vehicle routing, chauffeured arrivals, and shuttle operations for guests.",
     image: ""
@@ -73,7 +73,7 @@ function ServiceCard({ svc }) {
           />
         ) : (
           <div className="svc-card-placeholder-bg" style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg, #2a080c, #160003)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--gold-light)' }}>
-            <span style={{ fontSize: '2.5rem' }}>✨</span>
+            <span style={{ fontSize: '1.8rem', fontFamily: 'Cinzel, serif' }}>❀</span>
           </div>
         )}
         <div className="svc-card-overlay">
@@ -116,8 +116,9 @@ export default function Services() {
     <main className="subpage-layout">
 
       {/* Services Intro */}
-      <section className="services-intro">
-        <span className="ornament">✦</span>
+      <section className="services-intro" style={{ position: 'relative' }}>
+        <div className="floral-accent floral-accent--top-right" style={{ width: '100px', height: '100px', top: '-10px', right: '10px' }} aria-hidden="true"></div>
+        <span className="ornament">❀</span>
         <h2>SIGNATURE EXPERIENCE PACKAGES</h2>
         <p>Bespoke planning & themes custom tailored to reflect your identity and culture</p>
         <div className="gold-line"></div>
@@ -132,40 +133,35 @@ export default function Services() {
         </div>
       </section>
 
-      {/* Process flowchart section */}
+      {/* Pillars Section */}
       <section className="process-section" style={{ borderTop: '1px solid rgba(184, 150, 46, 0.15)', padding: '80px 24px' }}>
-        <span className="ornament">✦</span>
-        <h2>THE VELVET PLANNING TIMELINE</h2>
+        <span className="ornament">❀</span>
+        <h2>THE VELVET PILLARS</h2>
         <p>How we bring your dream milestone events to life step-by-step</p>
         <div className="gold-line"></div>
 
         <div className="process-grid">
           <div className="process-step">
             <div className="step-num">01</div>
-            <h4>Consultation</h4>
-            <p>Aligning on your vision, themes, and guest experiences.</p>
+            <h4>Bespoke Spatial Design</h4>
+            <p>Creating custom environments, lighting blueprints, and color palettes that fit your vision.</p>
           </div>
           <div className="process-step">
             <div className="step-num">02</div>
-            <h4>Design & Curation</h4>
-            <p>Creating customized decorators mood boards and stage mockups.</p>
+            <h4>Meticulous Timelines</h4>
+            <p>Coordinating vendors, guest transport, hotel lists, and stage setups with absolute military precision.</p>
           </div>
           <div className="process-step">
             <div className="step-num">03</div>
-            <h4>Coordination</h4>
-            <p>Managing vendors, hotel bookings, and travel logs.</p>
-          </div>
-          <div className="process-step">
-            <div className="step-num">04</div>
-            <h4>Celebration</h4>
-            <p>Our on-site directors execute everything flawlessly on-stage.</p>
+            <h4>Immersive Scenography</h4>
+            <p>Designing pathways, fog details, and floral setups to create a memorable atmosphere.</p>
           </div>
         </div>
       </section>
 
       {/* Services CTA Banner */}
       <section className="services-cta">
-        <span className="ornament">✦</span>
+        <span className="ornament">❀</span>
         <h3>Ready to Plan Your Next Grand Event?</h3>
         <p>Let's craft a celebration as unique as your vision.</p>
         <Link to="/contact" className="cta-btn">Consult with an Advisor</Link>

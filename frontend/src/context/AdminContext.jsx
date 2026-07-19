@@ -28,6 +28,13 @@ const initialVideoPromise = fetch(`${API_BASE}/video`)
     return null;
   });
 
+const initialStatsPromise = fetch(`${API_BASE}/stats`)
+  .then(res => res.ok ? res.json() : null)
+  .catch(err => {
+    console.error('Module-level pre-fetch stats error:', err);
+    return null;
+  });
+
 const formatImgSrc = (src) => {
   if (src.startsWith('/uploads/')) {
     const origin = API_BASE.replace('/api', '');
@@ -90,6 +97,23 @@ export function AdminProvider({ children }) {
     }
   });
 
+  const [stats, setStats] = useState(() => {
+    try {
+      const cached = localStorage.getItem('velvet_stats');
+      if (cached) {
+        return JSON.parse(cached);
+      }
+    } catch (err) {
+      console.error('Error parsing cached stats:', err);
+    }
+    return {
+      yearsOfGrace: '2+',
+      eventsCrafted: '150+',
+      happyClients: '99%',
+      citiesServed: '12+'
+    };
+  });
+
   const [enquiries, setEnquiries] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -132,6 +156,23 @@ export function AdminProvider({ children }) {
         const url = videoData.url || '';
         localStorage.setItem('velvet_video_url', url);
         setYoutubeUrl(url);
+      }
+
+      let statsData = null;
+      if (isInitial) {
+        statsData = await initialStatsPromise;
+      }
+
+      if (!statsData) {
+        const statsRes = await fetch(`${API_BASE}/stats`);
+        if (statsRes.ok) {
+          statsData = await statsRes.json();
+        }
+      }
+
+      if (statsData) {
+        localStorage.setItem('velvet_stats', JSON.stringify(statsData));
+        setStats(statsData);
       }
     } catch (err) {
       console.error('Error fetching public data:', err);
@@ -332,6 +373,36 @@ export function AdminProvider({ children }) {
     }
   }, [logout]);
 
+  // Save Stats values
+  const saveStats = useCallback(async (newStats) => {
+    const token = localStorage.getItem('velvet_token');
+    if (!token) return false;
+
+    try {
+      const res = await fetch(`${API_BASE}/stats`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(newStats)
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        localStorage.setItem('velvet_stats', JSON.stringify(data));
+        setStats(data);
+        return true;
+      } else if (res.status === 401) {
+        logout();
+      }
+      return false;
+    } catch (err) {
+      console.error('Error saving stats:', err);
+      return false;
+    }
+  }, [logout]);
+
   // Submit Enquiry
   const submitEnquiry = useCallback(async (formData) => {
     try {
@@ -381,6 +452,7 @@ export function AdminProvider({ children }) {
         galleryImages,
         serviceImages,
         youtubeUrl,
+        stats,
         enquiries,
         isLoading,
         addImages,
@@ -388,6 +460,7 @@ export function AdminProvider({ children }) {
         updateImageLabel,
         clearAll,
         saveYoutubeUrl,
+        saveStats,
         submitEnquiry,
         deleteEnquiry
       }}

@@ -2,6 +2,28 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useAdmin } from '../context/AdminContext';
 import AnimatedNumber from '../components/AnimatedNumber';
+import FloatingPetals from '../components/FloatingPetals';
+
+// Professional Line Icons
+const SparklesIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle', marginRight: '8px', color: 'var(--gold)' }}>
+    <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275Z" />
+  </svg>
+);
+
+const CrownIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle', marginRight: '8px', color: 'var(--gold)' }}>
+    <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7z" />
+    <path d="M5 20h14" />
+  </svg>
+);
+
+const VideoIcon = ({ size = 24, color = "currentColor" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle', marginBottom: '8px' }}>
+    <path d="M23 7l-7 5 7 5V7z" />
+    <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+  </svg>
+);
 
 // Default Fallbacks
 const defaultHeroImages = [];
@@ -125,7 +147,7 @@ function HomeServiceCard({ svc }) {
 }
 
 export default function Home() {
-  const { heroImages, galleryImages, serviceImages, youtubeUrl } = useAdmin();
+  const { heroImages, galleryImages, serviceImages, youtubeUrl, stats } = useAdmin();
 
   const displayServices = serviceImages.length > 0
     ? serviceImages.map((img, index) => {
@@ -209,6 +231,7 @@ export default function Home() {
     <main>
       {/* 1. Hero Slider Section */}
       <section className="hero" aria-label="Welcome slideshow">
+        <FloatingPetals />
         <div className="hero-slider-fade">
           {activeHeroImages.length > 0 ? (
             activeHeroImages.map((img, idx) => (
@@ -236,7 +259,7 @@ export default function Home() {
 
         <div className="hero-overlay" aria-hidden="true"></div>
         <div className="hero-content">
-          <p className="hero-eyebrow">✦ WELCOME TO ✦</p>
+          <p className="hero-eyebrow">❀ WELCOME TO ❀</p>
           <h1>VELVET VOWS</h1>
           <p className="hero-sub">Your Dream Event planned with Love and <strong>Perfection</strong></p>
           <Link to="/about" className="hero-cta">Discover Our Story</Link>
@@ -282,61 +305,126 @@ export default function Home() {
 
       {/* 3. About Section wrap */}
       <section className="about-section-wrap" aria-label="About Us summary">
-        <div className="about-card">
-          <div className="about-header">
-            <span className="ornament">✦</span>
-            <h2>Where Luxury Meets Tradition</h2>
-            <p className="about-tagline">
-              We design, plan and curate luxury experiences that blend the grandeur of legacy rituals with the smooth execution of modern timelines.
-            </p>
-          </div>
-
-          <div className="about-stats">
-            <div className="stat-box">
-              <span className="stat-num"><AnimatedNumber value="2+" /></span>
-              <span className="stat-label">Years of Grace</span>
-            </div>
-            <div className="stat-box">
-              <span className="stat-num"><AnimatedNumber value="150+" /></span>
-              <span className="stat-label">Events Crafted</span>
-            </div>
-            <div className="stat-box">
-              <span className="stat-num"><AnimatedNumber value="99%" /></span>
-              <span className="stat-label">Happy Clients</span>
-            </div>
-            <div className="stat-box">
-              <span className="stat-num"><AnimatedNumber value="12+" /></span>
-              <span className="stat-label">Cities Served</span>
-            </div>
-          </div>
-
-          <div className="about-content-grid">
-            <div className="about-block">
-              <h3><span className="block-icon">✨</span> Our Philosophy</h3>
-              <p>
-                Every grand milestone celebration is a sacred narrative. Whether it is an elite corporate gala, a high-profile social anniversary, or a royal wedding, we ensure your story is told with the highest degree of grandeur, precision, and heartfelt emotion, allowing you to live every moment completely hassle-free.
+        <div className="about-card-wrapper" style={{ position: 'relative', maxWidth: '900px', margin: '0 auto', top: '-30px' }}>
+          <div className="floral-accent floral-accent--top-right" aria-hidden="true"></div>
+          <div className="floral-accent floral-accent--bottom-left" aria-hidden="true"></div>
+          <div className="about-card" style={{ top: '0' }}>
+            <div className="about-header">
+              <span className="ornament">❀</span>
+              <h2>Where Luxury Meets Tradition</h2>
+              <p className="about-tagline">
+                We design, plan and curate luxury experiences that blend the grandeur of legacy rituals with the smooth execution of modern timelines.
               </p>
             </div>
-            <div className="about-block">
-              <h3><span className="block-icon">👑</span> Premium Offerings</h3>
-              <p>
-                From bespoke destination scouting, luxury floral layouts, sangeet stage management, and celebrity coordination, to custom traditional rituals, we curate every aspect with our dedicated team of hospitality professionals.
+
+            <div className="about-stats">
+              <div className="stat-box">
+                <span className="stat-num"><AnimatedNumber value={stats.yearsOfGrace || "2+"} /></span>
+                <span className="stat-label">Years of Grace</span>
+              </div>
+              <div className="stat-box">
+                <span className="stat-num"><AnimatedNumber value={stats.eventsCrafted || "150+"} /></span>
+                <span className="stat-label">Events Crafted</span>
+              </div>
+              <div className="stat-box">
+                <span className="stat-num"><AnimatedNumber value={stats.happyClients || "99%"} /></span>
+                <span className="stat-label">Happy Clients</span>
+              </div>
+              <div className="stat-box">
+                <span className="stat-num"><AnimatedNumber value={stats.citiesServed || "12+"} /></span>
+                <span className="stat-label">Cities Served</span>
+              </div>
+            </div>
+
+            <div className="about-content-grid">
+              <div className="about-block">
+                <h3 style={{ display: 'flex', alignItems: 'center' }}><SparklesIcon /> Our Philosophy</h3>
+                <p>
+                  Every grand milestone celebration is a sacred narrative. Whether it is an elite corporate gala, a high-profile social anniversary, or a royal wedding, we ensure your story is told with the highest degree of grandeur, precision, and heartfelt emotion, allowing you to live every moment completely hassle-free.
+                </p>
+              </div>
+              <div className="about-block">
+                <h3 style={{ display: 'flex', alignItems: 'center' }}><CrownIcon /> Premium Offerings</h3>
+                <p>
+                  From bespoke destination scouting, luxury floral layouts, sangeet stage management, and celebrity coordination, to custom traditional rituals, we curate every aspect with our dedicated team of hospitality professionals.
+                </p>
+              </div>
+            </div>
+
+            <div className="about-cta">
+              <h3>Ready to Create Lifelong Memories?</h3>
+              <p>Our advisors are ready to help guide your celebration planning.</p>
+              <Link to="/contact" className="cta-btn">Consult with an Advisor</Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Curated Portfolios Section */}
+      <section className="portfolio-showcase-section" aria-label="Curated Portfolios">
+        <div className="section-title">
+          <span className="ornament">❀</span>
+          <h2>CURATED PORTFOLIOS</h2>
+          <p>A look into our signature heritage themes and arrival designs</p>
+          <div className="gold-line"></div>
+        </div>
+
+        <div className="showcase-grid" style={{ display: 'flex', flexDirection: 'column', gap: '80px', maxWidth: '1100px', margin: '40px auto 0', padding: '0 24px' }}>
+          
+          {/* Portfolio 1: Malva Heritage */}
+          <div className="showcase-item" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '40px', alignItems: 'center' }}>
+            <div className="showcase-media-container" style={{ position: 'relative', overflow: 'hidden', borderRadius: '12px', boxShadow: '0 10px 30px rgba(74, 18, 26, 0.08)' }}>
+              <img 
+                src="/images/malva_heritage_decor.jpg" 
+                alt="Traditional Malva Heritage Decor" 
+                className="zoom-hover-img"
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              />
+            </div>
+            <div className="showcase-info" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <span style={{ fontSize: '0.72rem', letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--gold)', fontFamily: 'Cinzel, serif', fontWeight: 'bold' }}>Theme Curation</span>
+              <h3 style={{ fontFamily: 'Cinzel, serif', fontSize: '1.6rem', color: 'var(--brown)', margin: '0' }}>Traditional Malva Heritage Decor</h3>
+              <p style={{ fontSize: '0.94rem', color: 'var(--text)', lineHeight: '1.7', margin: '0' }}>
+                A tribute to local heritage. We utilize raw brass vessels, native marigolds, handmade terracotta details, and block-print textiles to frame your ancestral legacy with absolute class and sophistication.
               </p>
+              <Link to="/contact" className="tagline-link" style={{ alignSelf: 'flex-start', margin: '10px 0 0', padding: '10px 24px' }}>Consult on Heritage Design</Link>
             </div>
           </div>
 
-          <div className="about-cta">
-            <h3>Ready to Create Lifelong Memories?</h3>
-            <p>Our advisors are ready to help guide your celebration planning.</p>
-            <Link to="/contact" className="cta-btn">Consult with an Advisor</Link>
+          {/* Portfolio 2: Immersive Walkways */}
+          <div className="showcase-item showcase-item--reverse" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '40px', alignItems: 'center' }}>
+            <div className="showcase-info" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <span style={{ fontSize: '0.72rem', letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--gold)', fontFamily: 'Cinzel, serif', fontWeight: 'bold' }}>Scenography</span>
+              <h3 style={{ fontFamily: 'Cinzel, serif', fontSize: '1.6rem', color: 'var(--brown)', margin: '0' }}>Immersive Walkways & Arrival Experiences</h3>
+              <p style={{ fontSize: '0.94rem', color: 'var(--text)', lineHeight: '1.7', margin: '0' }}>
+                Creating a sense of wonder from the very first step. Our walkway installations feature custom architectural arches, fog and mist coordination, soft lighting arrays, and lush floral tunnels to guide your guests.
+              </p>
+              <Link to="/contact" className="tagline-link" style={{ alignSelf: 'flex-start', margin: '10px 0 0', padding: '10px 24px' }}>Request Arrival Scenography</Link>
+            </div>
+            <div className="showcase-media-container" style={{ position: 'relative', overflow: 'hidden', borderRadius: '12px', boxShadow: '0 10px 30px rgba(74, 18, 26, 0.08)' }}>
+              <img 
+                src="/images/immersive_way.jpg" 
+                className="zoom-hover-img"
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                onError={(e) => {
+                  // Fallback to correct file path
+                  e.target.src = '/images/immersive_way.jpg';
+                  e.target.onerror = (evt) => {
+                    evt.target.src = '/images/immersive_walkway.jpg';
+                  }
+                }}
+                alt="Immersive Walkways & Arrival Experiences" 
+              />
+            </div>
           </div>
+
         </div>
       </section>
 
       {/* 7. Wedding Moments Hanging Wire Infinite Carousel */}
       <section className="gallery-section" aria-label="Photo gallery wire carousel">
         <div className="section-title">
-          <span className="ornament">✦</span>
+          <span className="ornament">❀</span>
           <h2>A Few MOMENTS</h2>
           <p>A curated collection of love, joy, and timeless memories. Hover to focus or click to expand!</p>
           <div className="gold-line"></div>
@@ -441,7 +529,7 @@ export default function Home() {
 
       {/* 4. Services Grid section */}
       <section className="services-intro" style={{ backgroundColor: 'var(--cream)' }}>
-        <span className="ornament">✦</span>
+        <span className="ornament">❀</span>
         <h2>OUR SIGNATURE SERVICES</h2>
         <p>Bespoke themes custom tailored to reflect your identity and culture</p>
         <div className="gold-line"></div>
@@ -457,31 +545,26 @@ export default function Home() {
 
       {/* 5. Process flowchart section */}
       <section className="process-section" aria-label="Our process">
-        <span className="ornament">✦</span>
-        <h2>THE VELVET PROCESS</h2>
-        <p>How we bring your dream event to life step-by-step</p>
+        <span className="ornament">❀</span>
+        <h2>THE VELVET PILLARS</h2>
+        <p>How we bring your dream milestone events to life step-by-step</p>
         <div className="gold-line"></div>
 
         <div className="process-grid">
           <div className="process-step">
             <div className="step-num">01</div>
-            <h4>Consultation</h4>
-            <p>Aligning on your vision, themes, and guest experiences.</p>
+            <h4>Bespoke Spatial Design</h4>
+            <p>Creating custom environments, lighting blueprints, and color palettes that fit your vision.</p>
           </div>
           <div className="process-step">
             <div className="step-num">02</div>
-            <h4>Design & Curation</h4>
-            <p>Creating customized decorators mood boards and stage mockups.</p>
+            <h4>Meticulous Timelines</h4>
+            <p>Coordinating vendors, guest transport, hotel lists, and stage setups with absolute military precision.</p>
           </div>
           <div className="process-step">
             <div className="step-num">03</div>
-            <h4>Coordination</h4>
-            <p>Managing vendors, bookings, travel and many more.</p>
-          </div>
-          <div className="process-step">
-            <div className="step-num">04</div>
-            <h4>Celebration</h4>
-            <p>Our on-site directors execute everything flawlessly on-stage.</p>
+            <h4>Immersive Scenography</h4>
+            <p>Designing pathways, fog details, and floral setups to create a memorable atmosphere.</p>
           </div>
         </div>
       </section>
@@ -489,7 +572,7 @@ export default function Home() {
       {/* 6. Video Section */}
       <section className="video-section" aria-label="Event highlights video">
         <div className="section-title">
-          <span className="ornament">✦</span>
+          <span className="ornament">❀</span>
           <h2>HIGHLIGHTS GALLERY</h2>
           <p>Catch a glimpse of the cinematic magic we capture</p>
           <div className="gold-line"></div>
@@ -505,7 +588,7 @@ export default function Home() {
           </div>
         ) : (
           <div className="video-placeholder">
-            <span>🎬</span>
+            <VideoIcon size={36} color="var(--gold-dark)" />
             <p>No video added yet</p>
           </div>
         )}
@@ -514,7 +597,7 @@ export default function Home() {
       {/* 8. Testimonials carousel */}
       <section className="testimonials-section" aria-label="Client Testimonials">
         <div className="section-title">
-          <span className="ornament">✦</span>
+          <span className="ornament">❀</span>
           <h2>TESTIMONIALS</h2>
           <p>Words shared by the clients we've been honoured to serve</p>
           <div className="gold-line"></div>

@@ -1,6 +1,100 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAdmin } from '../context/AdminContext';
+
+// Professional Line Icons for Admin Panel
+const SliderIcon = ({ size = 18, color = "currentColor" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle', marginRight: '6px' }}>
+    <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18" />
+    <line x1="7" y1="2" x2="7" y2="22" />
+    <line x1="17" y1="2" x2="17" y2="22" />
+    <line x1="2" y1="12" x2="22" y2="12" />
+  </svg>
+);
+
+const GalleryIcon = ({ size = 18, color = "currentColor" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle', marginRight: '6px' }}>
+    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+    <circle cx="8.5" cy="8.5" r="1.5" />
+    <polyline points="21 15 16 10 5 21" />
+  </svg>
+);
+
+const ServicesIcon = ({ size = 18, color = "currentColor" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle', marginRight: '6px' }}>
+    <circle cx="12" cy="8" r="7" />
+    <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+  </svg>
+);
+
+const VideoIcon = ({ size = 18, color = "currentColor" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle', marginRight: '6px' }}>
+    <path d="M23 7l-7 5 7 5V7z" />
+    <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+  </svg>
+);
+
+const StatsIcon = ({ size = 18, color = "currentColor" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle', marginRight: '6px' }}>
+    <line x1="18" y1="20" x2="18" y2="10" />
+    <line x1="12" y1="20" x2="12" y2="4" />
+    <line x1="6" y1="20" x2="6" y2="14" />
+  </svg>
+);
+
+const EnquiriesIcon = ({ size = 18, color = "currentColor" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle', marginRight: '6px' }}>
+    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+    <polyline points="22,6 12,13 2,6" />
+  </svg>
+);
+
+const CameraIcon = ({ size = 36, color = "currentColor" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: '8px' }}>
+    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+    <circle cx="12" cy="13" r="4" />
+  </svg>
+);
+
+const SearchIcon = ({ size = 16, color = "currentColor" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="11" cy="11" r="8" />
+    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+  </svg>
+);
+
+const GlobeIcon = ({ size = 14, color = "currentColor" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle', marginRight: '6px' }}>
+    <circle cx="12" cy="12" r="10" />
+    <line x1="2" y1="12" x2="22" y2="12" />
+    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+  </svg>
+);
+
+const LogoutIcon = ({ size = 14, color = "currentColor" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle', marginRight: '6px' }}>
+    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+    <polyline points="16 17 21 12 16 7" />
+    <line x1="21" y1="12" x2="9" y2="12" />
+  </svg>
+);
+
+const TrashIcon = ({ size = 16, color = "currentColor" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle' }}>
+    <polyline points="3 6 5 6 21 6" />
+    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+    <line x1="10" y1="11" x2="10" y2="17" />
+    <line x1="14" y1="11" x2="14" y2="17" />
+  </svg>
+);
+
+const InfoIcon = ({ size = 16, color = "currentColor" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle', marginRight: '8px', color: 'var(--gold)' }}>
+    <circle cx="12" cy="12" r="10" />
+    <line x1="12" y1="16" x2="12" y2="12" />
+    <line x1="12" y1="8" x2="12.01" y2="8" />
+  </svg>
+);
 
 // Toast Notification helper
 function Toast({ message, type, onClose }) {
@@ -97,18 +191,18 @@ function ImagesGrid({ images, onDelete, onLabel, emptyMsg }) {
       <div className="ig-grid" role="list">
         {images.length === 0 ? (
           <div className="ig-empty">
-            <span>📷</span>
+            <CameraIcon size={36} color="var(--gold-dark)" />
             <p>{emptyMsg}</p>
           </div>
         ) : (
           images.map((img, idx) => (
-            <div className="ig-thumb" role="listitem" key={img.id}>
-              <div className="ig-img-wrap" onClick={() => setPreviewImg(img)}>
-                <img src={img.src} alt={img.label} loading="lazy" />
-                <div className="ig-overlay" aria-hidden="true">
-                  <span className="ig-zoom">🔍</span>
+              <div className="ig-thumb" role="listitem" key={img.id}>
+                <div className="ig-img-wrap" onClick={() => setPreviewImg(img)}>
+                  <img src={img.src} alt={img.label} loading="lazy" />
+                  <div className="ig-overlay" aria-hidden="true">
+                    <span className="ig-zoom"><SearchIcon size={16} color="#fff" /></span>
+                  </div>
                 </div>
-              </div>
               <div className="ig-badge" aria-hidden="true">{idx + 1}</div>
               <button 
                 className="ig-delete" 
@@ -360,8 +454,8 @@ function YoutubePanel({ url, onSave, showToast }) {
   return (
     <div className="yt-panel">
       <div className="yt-panel-header">
-        <div className="yt-panel-title">
-          <span>🎬</span>
+        <div className="yt-panel-title" style={{ display: 'flex', alignItems: 'center' }}>
+          <VideoIcon size={20} color="var(--gold-dark)" />
           <h3>YouTube Video</h3>
         </div>
       </div>
@@ -405,10 +499,108 @@ function YoutubePanel({ url, onSave, showToast }) {
           </div>
         ) : (
           <div className="yt-empty">
-            <span>🎬</span>
+            <VideoIcon size={36} color="var(--muted)" />
             <p>No video set — paste a YouTube URL above.</p>
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+// Stats values editing panel (MERN Premium Feature)
+function StatsPanel({ stats, onSave, showToast }) {
+  const [yearsOfGrace, setYearsOfGrace] = useState(stats.yearsOfGrace || '');
+  const [eventsCrafted, setEventsCrafted] = useState(stats.eventsCrafted || '');
+  const [happyClients, setHappyClients] = useState(stats.happyClients || '');
+  const [citiesServed, setCitiesServed] = useState(stats.citiesServed || '');
+
+  // Sync state with props
+  useEffect(() => {
+    setYearsOfGrace(stats.yearsOfGrace || '');
+    setEventsCrafted(stats.eventsCrafted || '');
+    setHappyClients(stats.happyClients || '');
+    setCitiesServed(stats.citiesServed || '');
+  }, [stats]);
+
+  const handleSave = async (e) => {
+    e.preventDefault();
+    const success = await onSave({
+      yearsOfGrace,
+      eventsCrafted,
+      happyClients,
+      citiesServed
+    });
+    if (success) {
+      showToast('✓ Story & Vision stats updated successfully!', 'success');
+    } else {
+      showToast('❌ Failed to update stats.', 'error');
+    }
+  };
+
+  return (
+    <div className="yt-panel">
+      <div className="yt-panel-header" style={{ background: 'linear-gradient(135deg, #a88a38, var(--gold))' }}>
+        <div className="yt-panel-title" style={{ display: 'flex', alignItems: 'center' }}>
+          <StatsIcon size={20} color="var(--gold-dark)" />
+          <h3>Our Story & Vision Stats</h3>
+        </div>
+      </div>
+
+      <div className="yt-panel-body">
+        <p className="yt-hint">
+          Update the milestone counters displayed in the "Where Luxury Meets Tradition" section on the home page and about page.
+        </p>
+
+        <form onSubmit={handleSave} className="stats-form" style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '10px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
+            <div className="stats-form-group" style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <label style={{ fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--brown)', fontFamily: 'Cinzel, serif' }}>Years of Grace</label>
+              <input
+                type="text"
+                className="yt-input"
+                style={{ width: '100%', boxSizing: 'border-box' }}
+                value={yearsOfGrace}
+                onChange={e => setYearsOfGrace(e.target.value)}
+                placeholder="e.g. 2+"
+              />
+            </div>
+            <div className="stats-form-group" style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <label style={{ fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--brown)', fontFamily: 'Cinzel, serif' }}>Events Crafted</label>
+              <input
+                type="text"
+                className="yt-input"
+                style={{ width: '100%', boxSizing: 'border-box' }}
+                value={eventsCrafted}
+                onChange={e => setEventsCrafted(e.target.value)}
+                placeholder="e.g. 150+"
+              />
+            </div>
+            <div className="stats-form-group" style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <label style={{ fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--brown)', fontFamily: 'Cinzel, serif' }}>Happy Clients</label>
+              <input
+                type="text"
+                className="yt-input"
+                style={{ width: '100%', boxSizing: 'border-box' }}
+                value={happyClients}
+                onChange={e => setHappyClients(e.target.value)}
+                placeholder="e.g. 99%"
+              />
+            </div>
+            <div className="stats-form-group" style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <label style={{ fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--brown)', fontFamily: 'Cinzel, serif' }}>Cities Served</label>
+              <input
+                type="text"
+                className="yt-input"
+                style={{ width: '100%', boxSizing: 'border-box' }}
+                value={citiesServed}
+                onChange={e => setCitiesServed(e.target.value)}
+                placeholder="e.g. 12+"
+              />
+            </div>
+          </div>
+          <button type="submit" className="yt-save-btn" style={{ alignSelf: 'flex-start', padding: '10px 24px' }}>Save Stats</button>
+        </form>
       </div>
     </div>
   );
@@ -426,8 +618,8 @@ function EnquiriesPanel({ enquiries, onDelete, showToast }) {
   return (
     <div className="dash-panel">
       <div className="dash-panel-header" style={{ background: 'linear-gradient(135deg, #6b4c2a, var(--brown))' }}>
-        <div className="dash-panel-title">
-          <span>✉️</span>
+        <div className="dash-panel-title" style={{ display: 'flex', alignItems: 'center' }}>
+          <EnquiriesIcon size={20} color="#fff" />
           <h3>Client Enquiries</h3>
         </div>
         <div className="dash-panel-meta">
@@ -438,7 +630,7 @@ function EnquiriesPanel({ enquiries, onDelete, showToast }) {
       <div className="dash-panel-body" style={{ padding: '0' }}>
         {enquiries.length === 0 ? (
           <div className="ig-empty" style={{ padding: '60px 20px' }}>
-            <span>✉️</span>
+            <EnquiriesIcon size={36} color="var(--muted)" />
             <p>No enquiries received yet.</p>
           </div>
         ) : (
@@ -456,27 +648,44 @@ function EnquiriesPanel({ enquiries, onDelete, showToast }) {
               <tbody>
                 {enquiries.map(enq => (
                   <tr key={enq._id} style={{ borderBottom: '1px solid rgba(0,0,0,0.05)', verticalAlign: 'top', color: 'var(--text)' }}>
-                    <td style={{ padding: '16px 20px', fontWeight: 'bold' }}>{enq.name}</td>
-                    <td style={{ padding: '16px 20px' }}>
+                    <td data-label="Client" style={{ padding: '16px 20px', fontWeight: 'bold' }}>{enq.name}</td>
+                    <td data-label="Contact" style={{ padding: '16px 20px' }}>
                       <a href={`mailto:${enq.email}`} style={{ display: 'block', color: 'var(--gold-dark)', textDecoration: 'none', marginBottom: '4px' }}>{enq.email}</a>
                       <span style={{ fontSize: '0.78rem', color: 'var(--muted)' }}>{enq.phone || 'No phone'}</span>
                     </td>
-                    <td style={{ padding: '16px 20px', textTransform: 'capitalize' }}>
-                      {enq.subject.replace('-', ' ')}
+                    <td data-label="Theme" style={{ padding: '16px 20px' }}>
+                      <div style={{ textTransform: 'capitalize', fontWeight: '500', color: 'var(--brown)', marginBottom: '6px' }}>
+                        {enq.subject ? enq.subject.replace('-', ' ') : 'General Enquiry'}
+                      </div>
+                      {enq.eventDate && (
+                        <div style={{ fontSize: '0.78rem', color: 'var(--text)', marginBottom: '4px' }}>
+                          <strong>Date:</strong> {enq.eventDate}
+                        </div>
+                      )}
+                      {enq.location && (
+                        <div style={{ fontSize: '0.78rem', color: 'var(--text)', marginBottom: '4px' }}>
+                          <strong>Venue:</strong> {enq.location}
+                        </div>
+                      )}
+                      {enq.guestCount && (
+                        <div style={{ fontSize: '0.78rem', color: 'var(--text)' }}>
+                          <strong>Guests:</strong> {enq.guestCount}
+                        </div>
+                      )}
                     </td>
-                    <td style={{ padding: '16px 20px', whiteSpace: 'pre-wrap', lineHeight: '1.5', maxWidth: '300px' }}>
+                    <td data-label="Message" style={{ padding: '16px 20px', whiteSpace: 'pre-wrap', lineHeight: '1.5', maxWidth: '300px' }}>
                       {enq.message}
                       <div style={{ fontSize: '0.7rem', color: 'var(--muted)', marginTop: '8px' }}>
                         Submitted: {new Date(enq.createdAt).toLocaleString()}
                       </div>
                     </td>
-                    <td style={{ padding: '16px 20px' }}>
+                    <td data-label="Action" style={{ padding: '16px 20px' }}>
                       <button
                         onClick={() => handleDelete(enq._id)}
-                        style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer', color: '#c0392b' }}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center' }}
                         title="Delete Enquiry"
                       >
-                        🗑️
+                        <TrashIcon size={18} color="#c0392b" />
                       </button>
                     </td>
                   </tr>
@@ -497,12 +706,14 @@ export default function AdminDashboard() {
     galleryImages,
     serviceImages,
     youtubeUrl,
+    stats,
     enquiries,
     addImages,
     deleteImage,
     updateImageLabel,
     clearAll,
     saveYoutubeUrl,
+    saveStats,
     deleteEnquiry
   } = useAdmin();
 
@@ -514,32 +725,33 @@ export default function AdminDashboard() {
   };
 
   const tabs = [
-    { id: 'hero', label: 'Hero Slider', icon: '🎠', count: heroImages.length },
-    { id: 'gallery', label: 'Gallery', icon: '🖼️', count: galleryImages.length },
-    { id: 'services', label: 'Service Images', icon: '💍', count: serviceImages.length },
-    { id: 'youtube', label: 'YouTube Video', icon: '🎬', count: null },
-    { id: 'enquiries', label: 'Enquiries', icon: '✉️', count: enquiries.length }
+    { id: 'hero', label: 'Hero Slider', icon: <SliderIcon />, count: heroImages.length },
+    { id: 'gallery', label: 'Gallery', icon: <GalleryIcon />, count: galleryImages.length },
+    { id: 'services', label: 'Service Images', icon: <ServicesIcon />, count: serviceImages.length },
+    { id: 'youtube', label: 'YouTube Video', icon: <VideoIcon />, count: null },
+    { id: 'stats', label: 'Milestone Stats', icon: <StatsIcon />, count: null },
+    { id: 'enquiries', label: 'Enquiries', icon: <EnquiriesIcon />, count: enquiries.length }
   ];
 
   const panels = {
     hero: {
       type: 'hero',
       title: 'Hero Slider',
-      icon: '🎠',
+      icon: <SliderIcon size={20} color="var(--gold-dark)" />,
       headerClass: 'dash-panel-header--hero',
       images: heroImages
     },
     gallery: {
       type: 'gallery',
       title: 'Gallery',
-      icon: '🖼️',
+      icon: <GalleryIcon size={20} color="var(--gold-dark)" />,
       headerClass: 'dash-panel-header--gallery',
       images: galleryImages
     },
     services: {
       type: 'services',
       title: 'Service Images',
-      icon: '💍',
+      icon: <ServicesIcon size={20} color="var(--gold-dark)" />,
       headerClass: 'dash-panel-header--services',
       images: serviceImages
     }
@@ -565,11 +777,11 @@ export default function AdminDashboard() {
           </div>
         </div>
         <div className="admin-topbar-right">
-          <Link to="/" className="admin-view-site">
-            <span>🌐</span> View Site
+          <Link to="/" className="admin-view-site" style={{ display: 'inline-flex', alignItems: 'center' }}>
+            <GlobeIcon size={14} color="var(--gold-dark)" /> View Site
           </Link>
-          <button className="admin-logout-btn" onClick={logout}>
-            <span>🚪</span> Logout
+          <button className="admin-logout-btn" onClick={logout} style={{ display: 'inline-flex', alignItems: 'center' }}>
+            <LogoutIcon size={14} color="#c0392b" /> Logout
           </button>
         </div>
       </header>
@@ -584,7 +796,7 @@ export default function AdminDashboard() {
           </div>
         ))}
         <div className="admin-stat-card admin-stat-card--total">
-          <span className="admin-stat-icon">📊</span>
+          <span className="admin-stat-icon"><StatsIcon size={24} color="var(--gold-dark)" /></span>
           <span className="admin-stat-num">
             {heroImages.length + galleryImages.length + serviceImages.length}
           </span>
@@ -619,6 +831,12 @@ export default function AdminDashboard() {
             onSave={saveYoutubeUrl}
             showToast={triggerToast}
           />
+        ) : activeTab === 'stats' ? (
+          <StatsPanel
+            stats={stats}
+            onSave={saveStats}
+            showToast={triggerToast}
+          />
         ) : activeTab === 'enquiries' ? (
           <EnquiriesPanel
             enquiries={enquiries}
@@ -640,13 +858,16 @@ export default function AdminDashboard() {
 
       {/* Help Block */}
       <div className="admin-help">
-        <h4>💡 How It Works</h4>
+        <h4 style={{ display: 'flex', alignItems: 'center' }}><InfoIcon /> How It Works</h4>
         <ul>
           <li>
             <strong>Hero Slider:</strong> Images show in the homepage slideshow. Seeding uploads them as real database records.
           </li>
           <li>
             <strong>Gallery:</strong> Images will display in the infinite scroll marquee gallery. Click labels to rename them.
+          </li>
+          <li>
+            <strong>Milestone Stats:</strong> Manage the live counters (e.g. Years of Grace, Events Crafted) shown on the homepage and about sections.
           </li>
           <li>
             <strong>Enquiries:</strong> Submissions from the contact form are stored in MongoDB. Authenticated admins can view or remove them here.

@@ -7,7 +7,7 @@ const { protect } = require('../middleware/auth');
 // @route   POST /api/enquiries
 // @access  Public
 router.post('/', async (req, res) => {
-  const { name, email, phone, subject, message } = req.body;
+  const { name, email, phone, subject, eventDate, location, guestCount, message } = req.body;
 
   if (!name || !email || !message) {
     return res.status(400).json({ message: 'Name, email, and message are required' });
@@ -19,6 +19,9 @@ router.post('/', async (req, res) => {
       email,
       phone,
       subject,
+      eventDate,
+      location,
+      guestCount,
       message,
     });
 
