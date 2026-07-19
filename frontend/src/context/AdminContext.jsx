@@ -12,11 +12,6 @@ const API_BASE = import.meta.env.VITE_API_BASE || (
     : `${window.location.origin}/api`
 );
 
-// In-memory caching variables to optimize tab-session navigation 
-// while ensuring page refreshes and tab closures fetch fresh data.
-let memoizedItems = null;
-let memoizedVideoUrl = null;
-
 const formatImgSrc = (src) => {
   if (src.startsWith('/uploads/')) {
     const origin = API_BASE.replace('/api', '');
@@ -30,44 +25,78 @@ export function AdminProvider({ children }) {
     return !!localStorage.getItem('velvet_token');
   });
   const [loginError, setLoginError] = useState('');
-  const [heroImages, setHeroImages] = useState([]);
-  const [galleryImages, setGalleryImages] = useState([]);
-  const [serviceImages, setServiceImages] = useState([]);
-  const [youtubeUrl, setYoutubeUrl] = useState('');
+  
+  // Initialize state synchronously from localStorage cache for instant first-frame rendering
+  const [heroImages, setHeroImages] = useState(() => {
+    try {
+      const cached = localStorage.getItem('velvet_items');
+      if (cached) {
+        const items = JSON.parse(cached);
+        return items.filter(item => item.type === 'hero').map(i => ({ ...i, src: formatImgSrc(i.src) }));
+      }
+    } catch (err) {
+      console.error('Error parsing cached hero images:', err);
+    }
+    return [];
+  });
+
+  const [galleryImages, setGalleryImages] = useState(() => {
+    try {
+      const cached = localStorage.getItem('velvet_items');
+      if (cached) {
+        const items = JSON.parse(cached);
+        return items.filter(item => item.type === 'gallery').map(i => ({ ...i, src: formatImgSrc(i.src) }));
+      }
+    } catch (err) {
+      console.error('Error parsing cached gallery images:', err);
+    }
+    return [];
+  });
+
+  const [serviceImages, setServiceImages] = useState(() => {
+    try {
+      const cached = localStorage.getItem('velvet_items');
+      if (cached) {
+        const items = JSON.parse(cached);
+        return items.filter(item => item.type === 'services').map(i => ({ ...i, src: formatImgSrc(i.src) }));
+      }
+    } catch (err) {
+      console.error('Error parsing cached service images:', err);
+    }
+    return [];
+  });
+
+  const [youtubeUrl, setYoutubeUrl] = useState(() => {
+    try {
+      return localStorage.getItem('velvet_video_url') || '';
+    } catch (err) {
+      return '';
+    }
+  });
+
   const [enquiries, setEnquiries] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   // Fetch initial data
   const fetchData = useCallback(async () => {
     try {
-      // Get images (Use in-memory cache if present)
-      if (memoizedItems) {
-        const items = memoizedItems;
+      // 1. Fetch fresh data in the background and update the state + cache
+      const imgRes = await fetch(`${API_BASE}/items`);
+      if (imgRes.ok) {
+        const items = await imgRes.json();
+        localStorage.setItem('velvet_items', JSON.stringify(items));
         setHeroImages(items.filter(item => item.type === 'hero').map(i => ({ ...i, src: formatImgSrc(i.src) })));
         setGalleryImages(items.filter(item => item.type === 'gallery').map(i => ({ ...i, src: formatImgSrc(i.src) })));
         setServiceImages(items.filter(item => item.type === 'services').map(i => ({ ...i, src: formatImgSrc(i.src) })));
-      } else {
-        const imgRes = await fetch(`${API_BASE}/items`);
-        if (imgRes.ok) {
-          const items = await imgRes.json();
-          memoizedItems = items;
-          setHeroImages(items.filter(item => item.type === 'hero').map(i => ({ ...i, src: formatImgSrc(i.src) })));
-          setGalleryImages(items.filter(item => item.type === 'gallery').map(i => ({ ...i, src: formatImgSrc(i.src) })));
-          setServiceImages(items.filter(item => item.type === 'services').map(i => ({ ...i, src: formatImgSrc(i.src) })));
-        }
       }
 
-      // Get video url (Use in-memory cache if present)
-      if (memoizedVideoUrl !== null) {
-        setYoutubeUrl(memoizedVideoUrl);
-      } else {
-        const videoRes = await fetch(`${API_BASE}/video`);
-        if (videoRes.ok) {
-          const v = await videoRes.json();
-          const url = v.url || '';
-          memoizedVideoUrl = url;
-          setYoutubeUrl(url);
-        }
+      // 2. Fetch fresh video url in the background and update the state + cache
+      const videoRes = await fetch(`${API_BASE}/video`);
+      if (videoRes.ok) {
+        const v = await videoRes.json();
+        const url = v.url || '';
+        localStorage.setItem('velvet_video_url', url);
+        setYoutubeUrl(url);
       }
     } catch (err) {
       console.error('Error fetching public data:', err);
@@ -154,8 +183,6 @@ export function AdminProvider({ children }) {
       });
 
       if (res.ok) {
-        // Clear in-memory cache and refetch images
-        memoizedItems = null;
         await fetchData();
         return true;
       }
@@ -185,7 +212,6 @@ export function AdminProvider({ children }) {
       });
 
       if (res.ok) {
-        memoizedItems = null;
         await fetchData();
       } else if (res.status === 401) {
         logout();
@@ -211,7 +237,6 @@ export function AdminProvider({ children }) {
       });
 
       if (res.ok) {
-        memoizedItems = null;
         await fetchData();
       } else if (res.status === 401) {
         logout();
@@ -235,7 +260,6 @@ export function AdminProvider({ children }) {
       });
 
       if (res.ok) {
-        memoizedItems = null;
         await fetchData();
       } else if (res.status === 401) {
         logout();
@@ -263,7 +287,7 @@ export function AdminProvider({ children }) {
       if (res.ok) {
         const v = await res.json();
         const newUrl = v.url || '';
-        memoizedVideoUrl = newUrl;
+        localStorage.setItem('velvet_video_url', newUrl);
         setYoutubeUrl(newUrl);
       } else if (res.status === 401) {
         logout();

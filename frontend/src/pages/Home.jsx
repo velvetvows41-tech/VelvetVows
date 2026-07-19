@@ -3,9 +3,20 @@ import { Link } from 'react-router-dom';
 import { useAdmin } from '../context/AdminContext';
 import AnimatedNumber from '../components/AnimatedNumber';
 
-// Default Fallbacks
-const defaultHeroImages = [];
-const defaultGalleryImages = [];
+// Default Fallbacks for instant first-time visits
+const defaultHeroImages = [
+  { id: 'h1', src: '/images/hero1.jpg', label: 'Ancient India Wedding' },
+  { id: 'h2', src: '/images/hero2.jpg', label: 'Traditional Indian Wedding' },
+  { id: 'h3', src: '/images/hero3.jpg', label: 'Royal Mandap Setup' },
+  { id: 'h4', src: '/images/hero4.jpg', label: 'Bridal Floral Walkway' },
+];
+
+const defaultGalleryImages = [
+  { id: 'g1', src: '/images/gallery1.jpg', label: 'Royal Mandap Setup' },
+  { id: 'g2', src: '/images/gallery2.jpg', label: 'Bridal Floral Walkway' },
+  { id: 'g3', src: '/images/gallery3.jpg', label: 'Bollywood Aisle Stage' },
+  { id: 'g4', src: '/images/gallery4.jpg', label: 'Mehndi Garden Theme' },
+];
 
 const defaultServices = [
   {
@@ -215,9 +226,16 @@ export default function Home() {
               <div 
                 key={img.id || idx} 
                 className={`hero-slide-fade ${idx === currentHero ? 'hero-slide-fade--active' : ''}`}
-                style={{ backgroundImage: `url(${img.src})` }}
                 aria-label={img.label}
-              ></div>
+              >
+                <img 
+                  src={img.src} 
+                  alt={img.label || 'Velvet Vows Event'} 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }}
+                  fetchPriority={idx === 0 ? "high" : "low"}
+                  loading={idx === 0 ? "eager" : "lazy"}
+                />
+              </div>
             ))
           ) : (
             <div 
