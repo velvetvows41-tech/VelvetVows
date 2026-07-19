@@ -165,27 +165,66 @@ function DashPanel({ type, title, icon, headerClass, images, onAdd, onDelete, on
   const [pendingImages, setPendingImages] = useState([]);
   const [uploading, setUploading] = useState(false);
 
-  const handleFiles = (files) => {
-    setUploading(true);
-    const loaded = [];
-    let completed = 0;
-
-    files.forEach((file, index) => {
+  const compressImage = (file) => {
+    return new Promise((resolve) => {
       const reader = new FileReader();
-      reader.onload = (e) => {
-        loaded[index] = {
-          id: `${Date.now()}-${index}`,
-          src: e.target.result,
-          label: file.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ')
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 1200;
+          const MAX_HEIGHT = 1200;
+          let width = img.width;
+          let height = img.height;
+
+          // Maintain aspect ratio while sizing down if necessary
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // Compress to JPEG with 0.75 quality to drastically reduce payload size for serverless limits
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
+          resolve(dataUrl);
         };
-        completed++;
-        if (completed === files.length) {
-          setPendingImages(prev => [...loaded.filter(Boolean), ...prev]);
-          setUploading(false);
-        }
+        img.src = event.target.result;
       };
       reader.readAsDataURL(file);
     });
+  };
+
+  const handleFiles = async (files) => {
+    setUploading(true);
+    const loaded = [];
+    
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      try {
+        const compressedSrc = await compressImage(file);
+        loaded.push({
+          id: `${Date.now()}-${i}`,
+          src: compressedSrc,
+          label: file.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ')
+        });
+      } catch (err) {
+        console.error('Failed to compress image:', err);
+      }
+    }
+    
+    setPendingImages(prev => [...loaded, ...prev]);
+    setUploading(false);
   };
 
   const handlePublish = async () => {
