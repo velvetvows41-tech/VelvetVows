@@ -3,20 +3,9 @@ import { Link } from 'react-router-dom';
 import { useAdmin } from '../context/AdminContext';
 import AnimatedNumber from '../components/AnimatedNumber';
 
-// Default Fallbacks for instant first-time visits
-const defaultHeroImages = [
-  { id: 'h1', src: '/images/hero1.jpg', label: 'Ancient India Wedding' },
-  { id: 'h2', src: '/images/hero2.jpg', label: 'Traditional Indian Wedding' },
-  { id: 'h3', src: '/images/hero3.jpg', label: 'Royal Mandap Setup' },
-  { id: 'h4', src: '/images/hero4.jpg', label: 'Bridal Floral Walkway' },
-];
-
-const defaultGalleryImages = [
-  { id: 'g1', src: '/images/gallery1.jpg', label: 'Royal Mandap Setup' },
-  { id: 'g2', src: '/images/gallery2.jpg', label: 'Bridal Floral Walkway' },
-  { id: 'g3', src: '/images/gallery3.jpg', label: 'Bollywood Aisle Stage' },
-  { id: 'g4', src: '/images/gallery4.jpg', label: 'Mehndi Garden Theme' },
-];
+// Default Fallbacks
+const defaultHeroImages = [];
+const defaultGalleryImages = [];
 
 const defaultServices = [
   {
