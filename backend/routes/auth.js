@@ -16,7 +16,7 @@ router.post('/login', async (req, res) => {
     if (user && (await user.matchPassword(password))) {
       res.json({
         username: user.username,
-        token: jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+        token: jwt.sign({ id: user._id }, process.env.JWT_SECRET || 'velvetvowstokensecretfallbackkey12345', {
           expiresIn: '30d',
         }),
       });
