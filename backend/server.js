@@ -71,31 +71,7 @@ const seedData = async () => {
       console.log('Admin user seeded successfully!');
     }
 
-    // 2. Seed default items if collection is empty
-    const itemsCount = await Item.countDocuments();
-    if (itemsCount === 0) {
-      console.log('Seeding default images...');
-      const defaultItems = [
-        // Hero Slider
-        { id: 'h1', type: 'hero', src: '/images/hero1.jpg', label: 'Ancient India Wedding' },
-        { id: 'h2', type: 'hero', src: '/images/hero2.jpg', label: 'Traditional Indian Wedding' },
-        { id: 'h3', type: 'hero', src: '/images/hero3.jpg', label: 'Bollywood Story Wedding' },
-        { id: 'h4', type: 'hero', src: '/images/hero4.jpg', label: 'Modern Dream Wedding' },
-        
-        // Gallery
-        { id: 'g1', type: 'gallery', src: '/images/gallery1.jpg', label: 'Royal Mandap Setup' },
-        { id: 'g2', type: 'gallery', src: '/images/gallery2.jpg', label: 'Bridal Floral Walkway' },
-        { id: 'g3', type: 'gallery', src: '/images/gallery3.jpg', label: 'Bollywood Aisle Stage' },
-        { id: 'g4', type: 'gallery', src: '/images/gallery4.jpg', label: 'Mehndi Garden Theme' },
-
-        // Services (default placeholding images)
-        { id: 's1', type: 'services', src: '/images/ancient.jpg', label: 'Royal Heritage Planning' },
-        { id: 's2', type: 'services', src: '/images/traditional.jpg', label: 'Custom Traditional Decor' },
-        { id: 's3', type: 'services', src: '/images/bollywood.jpg', label: 'Filmy Sangeet Choreography' },
-      ];
-      await Item.insertMany(defaultItems);
-      console.log('Default images seeded successfully!');
-    }
+    // 2. Seeding default items disabled (admin panel controls database items)
 
     // 3. Seed default YouTube video if none exists
     const videoCount = await Video.countDocuments();
