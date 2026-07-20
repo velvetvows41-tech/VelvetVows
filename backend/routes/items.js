@@ -10,6 +10,21 @@ function saveBase64Image(base64Str) {
   return base64Str;
 }
 
+const defaultDescriptions = {
+  "wedding planning": "From layout designing and budget tracking to vendor agreements, we shape your dream celebration from the ground up with absolute detail and care.",
+  "wedding curation": "From architectural floor plans and visual curation to custom vendor agreements, we design your milestone celebrations with meticulous attention to detail.",
+  "social & corporate events": "Bespoke styling and execution for high-profile social galas, birthdays, anniversaries, and corporate events with luxury hospitality and soundscapes.",
+  "social & corporate galas": "Bespoke spatial design and execution for high-profile anniversaries, luxury birthdays, and corporate galas with premium hospitality.",
+  "hospitality desk management": "Dedicated coordinators managing 24/7 guest check-in desks, key card handovers, room itinerary bags, and personal host supports at the hotel.",
+  "hospitality desk curation": "Dedicated coordinators managing 24/7 guest check-in desks, key card handovers, custom itinerary bags, and personal host supports.",
+  "guest coordination": "Handling digital RSVPs, family travel schedules, luggage tagging, and arranging welcome hampers and cards for every guest.",
+  "guest curation & rsvp logs": "Handling digital RSVPs, family travel schedules, luggage tagging, and arranging welcome hampers and cards for every guest.",
+  "venue & decor management": "Scouting heritage palaces and crafting grand floral avenues, cascading chandeliers, luxury mandaps, and high-fidelity stage designs.",
+  "venue & spatial design": "Scouting historic heritage locations and crafting grand floral avenues, cascading chandeliers, luxury mandaps, and high-fidelity stage designs.",
+  "guest transportation support": "Seamless airport and railway pickups with premium vehicle routing, chauffeured arrivals, and shuttle operations for guests.",
+  "guest logistics support": "Seamless airport and railway pickups with premium vehicle routing, chauffeured arrivals, and shuttle operations for guests."
+};
+
 // @desc    Get items, optionally filtered by type
 // @route   GET /api/items
 // @access  Public
@@ -49,11 +64,15 @@ router.post('/', protect, async (req, res) => {
         }
       }
 
+      const labelKey = (img.label || '').toLowerCase().trim();
+      const defaultDesc = type === 'services' ? (defaultDescriptions[labelKey] || 'Custom curated services designed and executed by our expert hospitality professionals.') : '';
+
       const newItem = new Item({
         id: img.id,
         type,
         src: srcPath,
         label: img.label || '',
+        description: img.description || defaultDesc,
       });
 
       const saved = await newItem.save();
@@ -66,21 +85,22 @@ router.post('/', protect, async (req, res) => {
   }
 });
 
-// @desc    Update item label
+// @desc    Update item label and description
 // @route   PUT /api/items/:id/label
 // @access  Private
 router.put('/:id/label', protect, async (req, res) => {
-  const { label } = req.body;
+  const { label, description } = req.body;
   try {
     const item = await Item.findOne({ id: req.params.id });
     if (!item) {
       return res.status(404).json({ message: 'Item not found' });
     }
-    item.label = label;
+    if (label !== undefined) item.label = label;
+    if (description !== undefined) item.description = description;
     await item.save();
     res.json(item);
   } catch (error) {
-    res.status(500).json({ message: 'Server error updating label' });
+    res.status(500).json({ message: 'Server error updating label and description' });
   }
 });
 

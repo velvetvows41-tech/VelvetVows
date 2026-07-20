@@ -298,7 +298,7 @@ export function AdminProvider({ children }) {
   }, [fetchData, logout]);
 
   // Update label
-  const updateImageLabel = useCallback(async (type, id, label) => {
+  const updateImageLabel = useCallback(async (type, id, label, description) => {
     const token = localStorage.getItem('velvet_token');
     if (!token) return;
 
@@ -309,7 +309,7 @@ export function AdminProvider({ children }) {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ label })
+        body: JSON.stringify({ label, description })
       });
 
       if (res.ok) {

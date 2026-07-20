@@ -93,9 +93,24 @@ function ServiceCard({ svc }) {
 export default function Services() {
   const { serviceImages } = useAdmin();
 
+  const findDefaultMeta = (label) => {
+    if (!label) return null;
+    const cleanLabel = label.toLowerCase().trim();
+    let match = services.find(s => 
+      s.title.toLowerCase() === cleanLabel || 
+      s.title.toLowerCase().includes(cleanLabel) || 
+      cleanLabel.includes(s.title.toLowerCase())
+    );
+    if (match) return match;
+    return services.find(s => 
+      s.badge.toLowerCase().includes(cleanLabel) || 
+      s.subtitle.toLowerCase().includes(cleanLabel)
+    );
+  };
+
   const displayServices = serviceImages.length > 0
     ? serviceImages.map((img, index) => {
-        const defaultMeta = services[index] || {
+        const defaultMeta = findDefaultMeta(img.label) || services[index] || {
           badge: "EXCLUSIVE SERVICE",
           title: img.label || `Custom Service ${index + 1}`,
           subtitle: "Bespoke Curation",
@@ -106,7 +121,7 @@ export default function Services() {
           badge: defaultMeta.badge,
           title: img.label || defaultMeta.title,
           subtitle: defaultMeta.subtitle || defaultMeta.badge,
-          description: defaultMeta.description,
+          description: img.description || defaultMeta.description,
           image: img.src
         };
       })

@@ -149,9 +149,24 @@ function HomeServiceCard({ svc }) {
 export default function Home() {
   const { heroImages, galleryImages, serviceImages, youtubeUrl, stats } = useAdmin();
 
+  const findDefaultMeta = (label) => {
+    if (!label) return null;
+    const cleanLabel = label.toLowerCase().trim();
+    let match = defaultServices.find(s => 
+      s.title.toLowerCase() === cleanLabel || 
+      s.title.toLowerCase().includes(cleanLabel) || 
+      cleanLabel.includes(s.title.toLowerCase())
+    );
+    if (match) return match;
+    return defaultServices.find(s => 
+      s.badge.toLowerCase().includes(cleanLabel) || 
+      s.subtitle.toLowerCase().includes(cleanLabel)
+    );
+  };
+
   const displayServices = serviceImages.length > 0
     ? serviceImages.map((img, index) => {
-        const defaultMeta = defaultServices[index] || {
+        const defaultMeta = findDefaultMeta(img.label) || defaultServices[index] || {
           badge: "EXCLUSIVE SERVICE",
           title: img.label || `Custom Service ${index + 1}`,
           subtitle: "Bespoke Curation",
@@ -162,7 +177,7 @@ export default function Home() {
           badge: defaultMeta.badge,
           title: img.label || defaultMeta.title,
           subtitle: defaultMeta.subtitle || defaultMeta.badge,
-          description: defaultMeta.description,
+          description: img.description || defaultMeta.description,
           image: img.src
         };
       })
@@ -206,6 +221,21 @@ export default function Home() {
 
   // State for Gallery Lightbox
   const [lightboxImg, setLightboxImg] = useState(null);
+
+  // Handle Escape key to close lightbox
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setLightboxImg(null);
+      }
+    };
+    if (lightboxImg) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [lightboxImg]);
   const activeGalleryImages = galleryImages.length > 0 ? galleryImages : defaultGalleryImages;
   
   // Group gallery images into chunks of 3 for the curved hanging wire carousel
@@ -520,9 +550,21 @@ export default function Home() {
         )}
 
         {lightboxImg && (
-          <div className="lightbox" role="dialog" aria-modal="true" aria-label={lightboxImg.label} onClick={() => setLightboxImg(null)}>
+          <div 
+            className="lightbox" 
+            role="dialog" 
+            aria-modal="true" 
+            aria-label={lightboxImg.label} 
+            onClick={() => setLightboxImg(null)}
+            onTouchStart={() => setLightboxImg(null)}
+          >
             <button className="lb-close" onClick={() => setLightboxImg(null)}>&times;</button>
-            <img src={lightboxImg.src} alt={lightboxImg.label} onClick={e => e.stopPropagation()} />
+            <img 
+              src={lightboxImg.src} 
+              alt={lightboxImg.label} 
+              onClick={e => e.stopPropagation()} 
+              onTouchStart={e => e.stopPropagation()}
+            />
           </div>
         )}
       </section>

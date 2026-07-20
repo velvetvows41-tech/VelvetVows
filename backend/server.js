@@ -81,7 +81,31 @@ const seedData = async () => {
       console.log('Admin user seeded successfully!');
     }
 
-    // 2. Seeding default items disabled (admin panel controls database items)
+    // 2. Curate descriptions for existing services items in database
+    const servicesItems = await Item.find({ type: 'services' });
+    const defaultDescriptions = {
+      "wedding planning": "From layout designing and budget tracking to vendor agreements, we shape your dream celebration from the ground up with absolute detail and care.",
+      "wedding curation": "From architectural floor plans and visual curation to custom vendor agreements, we design your milestone celebrations with meticulous attention to detail.",
+      "social & corporate events": "Bespoke styling and execution for high-profile social galas, birthdays, anniversaries, and corporate events with luxury hospitality and soundscapes.",
+      "social & corporate galas": "Bespoke spatial design and execution for high-profile anniversaries, luxury birthdays, and corporate galas with premium hospitality.",
+      "hospitality desk management": "Dedicated coordinators managing 24/7 guest check-in desks, key card handovers, room itinerary bags, and personal host supports at the hotel.",
+      "hospitality desk curation": "Dedicated coordinators managing 24/7 guest check-in desks, key card handovers, custom itinerary bags, and personal host supports.",
+      "guest coordination": "Handling digital RSVPs, family travel schedules, luggage tagging, and arranging welcome hampers and cards for every guest.",
+      "guest curation & rsvp logs": "Handling digital RSVPs, family travel schedules, luggage tagging, and arranging welcome hampers and cards for every guest.",
+      "venue & decor management": "Scouting heritage palaces and crafting grand floral avenues, cascading chandeliers, luxury mandaps, and high-fidelity stage designs.",
+      "venue & spatial design": "Scouting historic heritage locations and crafting grand floral avenues, cascading chandeliers, luxury mandaps, and high-fidelity stage designs.",
+      "guest transportation support": "Seamless airport and railway pickups with premium vehicle routing, chauffeured arrivals, and shuttle operations for guests.",
+      "guest logistics support": "Seamless airport and railway pickups with premium vehicle routing, chauffeured arrivals, and shuttle operations for guests."
+    };
+
+    for (const item of servicesItems) {
+      if (!item.description) {
+        const key = (item.label || '').toLowerCase().trim();
+        item.description = defaultDescriptions[key] || "Custom curated services designed and executed by our expert hospitality professionals.";
+        await item.save();
+        console.log(`Curated description for service: ${item.label}`);
+      }
+    }
 
     // 3. Seed default YouTube video if none exists
     const videoCount = await Video.countDocuments();

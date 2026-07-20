@@ -169,21 +169,36 @@ function UploadZone({ onFiles, uploading }) {
 }
 
 // Current images grid manager
-function ImagesGrid({ images, onDelete, onLabel, emptyMsg }) {
-  const [editingId, setEditingId] = useState(null);
+function ImagesGrid({ type, images, onDelete, onLabel, emptyMsg }) {
+  const [editingImg, setEditingImg] = useState(null);
   const [editLabel, setEditLabel] = useState('');
+  const [editDescription, setEditDescription] = useState('');
   const [previewImg, setPreviewImg] = useState(null);
 
+  // Handle Escape key to close preview
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setPreviewImg(null);
+      }
+    };
+    if (previewImg) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [previewImg]);
+
   const startEdit = (img) => {
-    setEditingId(img.id);
+    setEditingImg(img);
     setEditLabel(img.label || '');
+    setEditDescription(img.description || '');
   };
 
-  const saveLabel = (id) => {
-    if (editLabel.trim()) {
-      onLabel(id, editLabel.trim());
-    }
-    setEditingId(null);
+  const saveLabel = () => {
+    onLabel(editingImg.id, editLabel.trim(), type === 'services' ? editDescription.trim() : undefined);
+    setEditingImg(null);
   };
 
   return (
@@ -212,42 +227,102 @@ function ImagesGrid({ images, onDelete, onLabel, emptyMsg }) {
               >
                 &times;
               </button>
-              <div className="ig-label-row">
-                {editingId === img.id ? (
-                  <input
-                    className="ig-label-input"
-                    value={editLabel}
-                    onChange={e => setEditLabel(e.target.value)}
-                    onBlur={() => saveLabel(img.id)}
-                    onKeyDown={e => {
-                      if (e.key === 'Enter') saveLabel(img.id);
-                      if (e.key === 'Escape') setEditingId(null);
-                    }}
-                    autoFocus
-                    aria-label="Edit image label"
-                  />
-                ) : (
+              <div className="ig-label-row" onClick={() => startEdit(img)}>
+                <div style={{ display: 'flex', flexDirection: 'column', width: '100%', padding: '4px 8px' }}>
                   <span
                     className="ig-label"
-                    onClick={() => startEdit(img)}
                     title="Click to edit label"
                     role="button"
                     tabIndex={0}
-                    onKeyDown={e => e.key === 'Enter' && startEdit(img)}
+                    style={{ fontWeight: 'bold', display: 'block', cursor: 'pointer' }}
                   >
                     {img.label || 'Untitled'}
                   </span>
-                )}
+                  {type === 'services' && (
+                    <p 
+                      className="ig-desc-preview" 
+                      style={{ fontSize: '0.8rem', color: '#666', marginTop: '4px', cursor: 'pointer', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', lineHeight: '1.2' }}
+                      title="Click to edit description"
+                    >
+                      {img.description || 'No description provided.'}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
           ))
         )}
       </div>
 
+      {editingImg && (
+        <div className="edit-modal-overlay" role="dialog" aria-modal="true" onClick={() => setEditingImg(null)}>
+          <div className="edit-modal-container" onClick={e => e.stopPropagation()}>
+            <div className="edit-modal-header">
+              <h3>Edit Details</h3>
+              <button className="edit-modal-close" onClick={() => setEditingImg(null)}>&times;</button>
+            </div>
+            <div className="edit-modal-body">
+              <div className="edit-modal-preview">
+                <img src={editingImg.src} alt="Preview" />
+              </div>
+              <div className="edit-modal-fields">
+                <div className="edit-modal-field-group">
+                  <label>Label / Title</label>
+                  <input
+                    type="text"
+                    value={editLabel}
+                    onChange={e => setEditLabel(e.target.value)}
+                    placeholder="Enter label"
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') saveLabel();
+                      if (e.key === 'Escape') setEditingImg(null);
+                    }}
+                    autoFocus
+                  />
+                </div>
+                {type === 'services' && (
+                  <div className="edit-modal-field-group">
+                    <label>Description</label>
+                    <textarea
+                      value={editDescription}
+                      onChange={e => setEditDescription(e.target.value)}
+                      placeholder="Enter description"
+                      rows={4}
+                      onKeyDown={e => {
+                        if (e.key === 'Escape') setEditingImg(null);
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="edit-modal-footer">
+              <button className="edit-modal-btn edit-modal-btn-cancel" onClick={() => setEditingImg(null)}>
+                Cancel
+              </button>
+              <button className="edit-modal-btn edit-modal-btn-save" onClick={saveLabel}>
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {previewImg && (
-        <div className="ig-lightbox" role="dialog" aria-modal="true" onClick={() => setPreviewImg(null)}>
+        <div 
+          className="ig-lightbox" 
+          role="dialog" 
+          aria-modal="true" 
+          onClick={() => setPreviewImg(null)}
+          onTouchStart={() => setPreviewImg(null)}
+        >
           <button className="ig-lb-close" onClick={() => setPreviewImg(null)}>&times;</button>
-          <img src={previewImg.src} alt={previewImg.label} onClick={e => e.stopPropagation()} />
+          <img 
+            src={previewImg.src} 
+            alt={previewImg.label} 
+            onClick={e => e.stopPropagation()} 
+            onTouchStart={e => e.stopPropagation()}
+          />
         </div>
       )}
     </>
@@ -310,7 +385,7 @@ function DashPanel({ type, title, icon, headerClass, images, onAdd, onDelete, on
         loaded.push({
           id: `${Date.now()}-${i}`,
           src: compressedSrc,
-          label: file.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ')
+          label: ''
         });
       } catch (err) {
         console.error('Failed to compress image:', err);
@@ -323,6 +398,15 @@ function DashPanel({ type, title, icon, headerClass, images, onAdd, onDelete, on
 
   const handlePublish = async () => {
     if (pendingImages.length === 0) return;
+
+    if (type === 'services') {
+      const hasEmptyLabel = pendingImages.some(img => !img.label || !img.label.trim());
+      if (hasEmptyLabel) {
+        showToast('❌ Please specify a label for each service image.', 'error');
+        return;
+      }
+    }
+
     const success = await onAdd(type, pendingImages);
     if (success) {
       showToast(`✓ ${pendingImages.length} image${pendingImages.length > 1 ? 's' : ''} published to ${title}!`, 'success');
@@ -338,6 +422,10 @@ function DashPanel({ type, title, icon, headerClass, images, onAdd, onDelete, on
 
   const handleUpdatePendingLabel = (id, newLabel) => {
     setPendingImages(prev => prev.map(img => img.id === id ? { ...img, label: newLabel } : img));
+  };
+
+  const handleUpdatePendingDescription = (id, newDesc) => {
+    setPendingImages(prev => prev.map(img => img.id === id ? { ...img, description: newDesc } : img));
   };
 
   const handleDeleteCurrent = async (id) => {
@@ -381,20 +469,35 @@ function DashPanel({ type, title, icon, headerClass, images, onAdd, onDelete, on
               </span>
               <button className="dash-pending-clear" onClick={() => setPendingImages([])}>✕ Clear</button>
             </div>
-            <div className="dash-pending-row">
+            <div className="dash-pending-list">
               {pendingImages.map(img => (
-                <div className="dash-pending-item" key={img.id}>
-                  <div className="dash-pending-thumb">
-                    <img src={img.src} alt={img.label} />
-                    <button className="dash-pending-remove" onClick={() => handleRemovePending(img.id)}>&times;</button>
+                <div className="dash-pending-card" key={img.id}>
+                  <div className="dash-pending-card-aside">
+                    <img src={img.src} alt="Pending preview" />
+                    <button className="dash-pending-card-remove" onClick={() => handleRemovePending(img.id)}>✕ Remove</button>
                   </div>
-                  <input
-                    type="text"
-                    className="dash-pending-input"
-                    placeholder="Add label..."
-                    value={img.label || ''}
-                    onChange={(e) => handleUpdatePendingLabel(img.id, e.target.value)}
-                  />
+                  <div className="dash-pending-card-fields">
+                    <div className="dash-pending-field-group">
+                      <label>Label</label>
+                      <input
+                        type="text"
+                        placeholder="Add label..."
+                        value={img.label || ''}
+                        onChange={(e) => handleUpdatePendingLabel(img.id, e.target.value)}
+                      />
+                    </div>
+                    {type === 'services' && (
+                      <div className="dash-pending-field-group">
+                        <label>Description</label>
+                        <textarea
+                          placeholder="Add description..."
+                          value={img.description || ''}
+                          onChange={(e) => handleUpdatePendingDescription(img.id, e.target.value)}
+                          rows={2}
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -406,11 +509,12 @@ function DashPanel({ type, title, icon, headerClass, images, onAdd, onDelete, on
 
         <div className="dash-current-label">CURRENT IMAGES ({images.length})</div>
         <ImagesGrid
+          type={type}
           images={images}
           onDelete={handleDeleteCurrent}
-          onLabel={(id, label) => {
-            onLabel(type, id, label);
-            showToast('Label updated!', 'success');
+          onLabel={(id, label, description) => {
+            onLabel(type, id, label, description);
+            showToast('Item updated!', 'success');
           }}
           emptyMsg={`No ${title.toLowerCase()} images yet — upload some above.`}
         />
