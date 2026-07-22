@@ -230,6 +230,7 @@ export default function Home() {
   // State for Testimonials Slider
   const [currentTesti, setCurrentTesti] = useState(0);
   const activeTestimonials = testimonials && testimonials.length > 0 ? testimonials : defaultTestimonials;
+  const activePortfolios = portfolios && portfolios.length > 0 ? portfolios : defaultPortfolios;
 
   const nextTesti = useCallback(() => {
     setCurrentTesti(prev => (prev + 1) % activeTestimonials.length);
