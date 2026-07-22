@@ -83,7 +83,11 @@ export function AdminProvider({ children }) {
       const cached = localStorage.getItem('velvet_items');
       if (cached) {
         const items = JSON.parse(cached);
-        const filtered = items.filter(item => item.type === 'hero' && item.id !== HARDCODED_HERO_IMAGE.id);
+        const filtered = items.filter(item => 
+          item.type === 'hero' && 
+          item.id !== HARDCODED_HERO_IMAGE.id && 
+          !item.src.includes('img-1784374660326-382082045.jpg')
+        );
         return [
           { ...HARDCODED_HERO_IMAGE, src: formatImgSrc(HARDCODED_HERO_IMAGE.src) },
           ...filtered.map(i => ({ ...i, src: formatImgSrc(i.src) }))
@@ -223,7 +227,11 @@ export function AdminProvider({ children }) {
 
       if (items) {
         localStorage.setItem('velvet_items', JSON.stringify(items));
-        const filteredHero = items.filter(item => item.type === 'hero' && item.id !== HARDCODED_HERO_IMAGE.id);
+        const filteredHero = items.filter(item => 
+          item.type === 'hero' && 
+          item.id !== HARDCODED_HERO_IMAGE.id && 
+          !item.src.includes('img-1784374660326-382082045.jpg')
+        );
         setHeroImages([
           { ...HARDCODED_HERO_IMAGE, src: formatImgSrc(HARDCODED_HERO_IMAGE.src) },
           ...filteredHero.map(i => ({ ...i, src: formatImgSrc(i.src) }))

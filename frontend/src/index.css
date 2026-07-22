@@ -4077,39 +4077,39 @@ h1, h2, h3, h4, h5, h6 {
   pointer-events: none;
   animation: fallPetal 15s linear infinite;
   will-change: transform, top, left, opacity;
-  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.12));
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.18));
 }
 
-/* 1. Rose Petals (Luxurious soft crimson/pink) */
+/* 1. Vibrant Rose Pink/Red */
 .petal:nth-child(3n+1) {
-  background: linear-gradient(135deg, rgba(255, 182, 193, 0.95) 0%, rgba(244, 143, 177, 0.6) 50%, rgba(136, 14, 79, 0.25) 100%);
+  background: linear-gradient(135deg, rgba(255, 60, 100, 1) 0%, rgba(216, 27, 96, 0.95) 50%, rgba(136, 14, 79, 0.8) 100%);
   border-radius: 70% 50% 70% 40%;
-  box-shadow: inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.7), 
-              inset -1px -1px 2px rgba(136, 14, 79, 0.3);
+  box-shadow: inset 2px 2px 3px rgba(255, 255, 255, 0.9), 
+              inset -1.5px -1.5px 2px rgba(136, 14, 79, 0.5);
 }
 
-/* 2. Marigold Petals (Traditional Indian wedding golden-orange) */
+/* 2. Deep Luxurious Crimson */
 .petal:nth-child(3n+2) {
-  background: linear-gradient(135deg, rgba(254, 213, 91, 0.95) 0%, rgba(251, 140, 0, 0.65) 60%, rgba(230, 81, 0, 0.2) 100%);
+  background: linear-gradient(135deg, rgba(220, 20, 60, 1) 0%, rgba(176, 22, 64, 0.95) 55%, rgba(90, 10, 40, 0.85) 100%);
   border-radius: 60% 40% 70% 30%;
-  box-shadow: inset 1px 1.5px 2px rgba(255, 255, 255, 0.8),
-              inset -1px -1.5px 2px rgba(183, 28, 28, 0.25);
+  box-shadow: inset 2px 2px 3px rgba(255, 255, 255, 0.95),
+              inset -2px -2px 3px rgba(90, 10, 40, 0.6);
 }
 
-/* 3. Jasmine Petals (Delicate soft cream/white) */
+/* 3. Soft Rose Satin */
 .petal:nth-child(3n+3) {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(245, 245, 220, 0.65) 70%, rgba(212, 175, 55, 0.25) 100%);
-  border-radius: 50% 50% 50% 50% / 80% 80% 20% 20%; /* Realistic tear-drop jasmine shape */
-  box-shadow: inset 1px 1px 2px rgba(255, 255, 255, 0.9),
-              inset -1px -1px 2px rgba(184, 150, 46, 0.2);
+  background: linear-gradient(135deg, rgba(255, 120, 150, 1) 0%, rgba(244, 143, 177, 0.95) 60%, rgba(173, 20, 87, 0.75) 100%);
+  border-radius: 50% 70% 50% 60%;
+  box-shadow: inset 1.5px 1.5px 2px rgba(255, 255, 255, 0.9),
+              inset -1.5px -1.5px 2px rgba(173, 20, 87, 0.4);
 }
 
-/* 4. Green Leaves (Foliage accents) */
+/* 4. Elegant Magenta Rose */
 .petal:nth-child(4n) {
-  background: linear-gradient(135deg, rgba(165, 214, 167, 0.85) 0%, rgba(76, 175, 80, 0.45) 60%, rgba(27, 94, 32, 0.2) 100%);
-  border-radius: 85% 0 85% 0; /* Leaf shape */
-  box-shadow: inset 1.5px 1px 2px rgba(255, 255, 255, 0.5),
-              inset -1px -1px 2px rgba(27, 94, 32, 0.3);
+  background: linear-gradient(135deg, rgba(233, 30, 99, 1) 0%, rgba(194, 24, 91, 0.95) 60%, rgba(110, 10, 50, 0.8) 100%);
+  border-radius: 80% 30% 80% 30%;
+  box-shadow: inset 2px 1.5px 3px rgba(255, 255, 255, 0.8),
+              inset -2px -1.5px 2px rgba(110, 10, 50, 0.5);
 }
 
 @keyframes fallPetal {
@@ -4119,20 +4119,23 @@ h1, h2, h3, h4, h5, h6 {
     opacity: 0;
   }
   10% {
-    opacity: 0.9;
+    opacity: 1;
   }
   25% {
-    transform: translate3d(40px, 0, 0) rotateX(90deg) rotateY(120deg) rotateZ(45deg) scale(0.8);
+    transform: translate3d(40px, 0, 0) rotateX(90deg) rotateY(120deg) rotateZ(45deg) scale(0.85);
   }
   50% {
-    transform: translate3d(-40px, 0, 0) rotateX(180deg) rotateY(240deg) rotateZ(90deg) scale(0.9);
+    transform: translate3d(-40px, 0, 0) rotateX(180deg) rotateY(240deg) rotateZ(90deg) scale(0.95);
   }
   75% {
-    transform: translate3d(50px, 0, 0) rotateX(270deg) rotateY(360deg) rotateZ(135deg) scale(1.0);
+    transform: translate3d(50px, 0, 0) rotateX(270deg) rotateY(360deg) rotateZ(135deg) scale(1.05);
+  }
+  90% {
+    opacity: 1;
   }
   100% {
     top: 110%;
-    transform: translate3d(-30px, 0, 0) rotateX(360deg) rotateY(480deg) rotateZ(180deg) scale(1.1);
+    transform: translate3d(-30px, 0, 0) rotateX(360deg) rotateY(480deg) rotateZ(180deg) scale(1.15);
     opacity: 0;
   }
 }
