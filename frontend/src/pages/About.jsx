@@ -25,7 +25,7 @@ const BriefcaseIcon = () => (
 );
 
 export default function About() {
-  const { stats } = useAdmin();
+  const { stats, brandText } = useAdmin();
 
   return (
     <main className="subpage-layout">
@@ -38,9 +38,9 @@ export default function About() {
           <div className="about-card" style={{ top: '0', margin: '0' }}>
             <div className="about-header" style={{ borderBottom: '1px solid rgba(184, 150, 46, 0.15)' }}>
               <span className="ornament">❀</span>
-              <h2>OUR STORY & VISION</h2>
+              <h2>{brandText.aboutStoryTitle || 'OUR STORY & VISION'}</h2>
               <p className="about-tagline">
-                Velvet Vows has defined luxury event planning by seamlessly executing traditional heritage integrated with modern grandeur.
+                {brandText.aboutStoryTagline || 'Velvet Vows has defined luxury event planning by seamlessly executing traditional heritage integrated with modern grandeur.'}
               </p>
             </div>
 
@@ -65,23 +65,23 @@ export default function About() {
 
             <div className="about-content-grid" style={{ gridTemplateColumns: '1fr' }}>
               <div className="about-block" style={{ borderRight: 'none', borderBottom: '1px solid rgba(184, 150, 46, 0.15)' }}>
-                <h3 style={{ display: 'flex', alignItems: 'center' }}><SparklesIcon /> Our Philosophy</h3>
+                <h3 style={{ display: 'flex', alignItems: 'center' }}><SparklesIcon /> {brandText.aboutPhilosophyTitle || 'Our Philosophy'}</h3>
                 <p>
-                  We believe that a grand event is a sacred journey where families, friends, or organizations connect. Our task is to safeguard the sanctity of these moments by handling all administrative friction, vendor negotiation, travel logs, hotel checklists, stage setups, and decor timelines. We work in the background as silent directors so that you can live the happiest moments of your life fully.
+                  {brandText.aboutPhilosophyDesc || 'We believe that a grand event is a sacred journey where families, friends, or organizations connect. Our task is to safeguard the sanctity of these moments by handling all administrative friction, vendor negotiation, travel logs, hotel checklists, stage setups, and decor timelines. We work in the background as silent directors so that you can live the happiest moments of your life fully.'}
                 </p>
               </div>
 
               <div className="about-block" style={{ borderRight: 'none', borderBottom: '1px solid rgba(184, 150, 46, 0.15)' }}>
-                <h3 style={{ display: 'flex', alignItems: 'center' }}><AwardIcon /> Signature Style</h3>
+                <h3 style={{ display: 'flex', alignItems: 'center' }}><AwardIcon /> {brandText.aboutSignatureTitle || 'Signature Style'}</h3>
                 <p>
-                  Our signature aesthetic is characterized by timeless refinement, rich botanical layouts, golden lighting geometry, and curated traditional craftsmanship. We collaborate with India's finest floral designers, local artisans, celebrity decorators, and lighting designers to turn any space into a royal sanctuary.
+                  {brandText.aboutSignatureDesc || 'Our signature aesthetic is characterized by timeless refinement, rich botanical layouts, golden lighting geometry, and curated traditional craftsmanship. We collaborate with India\'s finest floral designers, local artisans, celebrity decorators, and lighting designers to turn any space into a royal sanctuary.'}
                 </p>
               </div>
 
               <div className="about-block" style={{ borderRight: 'none' }}>
-                <h3 style={{ display: 'flex', alignItems: 'center' }}><BriefcaseIcon /> End-to-End Execution</h3>
+                <h3 style={{ display: 'flex', alignItems: 'center' }}><BriefcaseIcon /> {brandText.aboutExecutionTitle || 'End-to-End Execution'}</h3>
                 <p>
-                  We manage everything from destination mapping, digital RSVP logs, catering consultations, VIP check-in logs, transport logistics, sound design, and final stage coordination. You can trust our team of dedicated event coordinators to run the event with absolute military precision.
+                  {brandText.aboutExecutionDesc || 'We manage everything from destination mapping, digital RSVP logs, catering consultations, VIP check-in logs, transport logistics, sound design, and final stage coordination. You can trust our team of dedicated event coordinators to run the event with absolute military precision.'}
                 </p>
               </div>
             </div>

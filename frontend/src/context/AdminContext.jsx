@@ -35,6 +35,13 @@ const initialStatsPromise = fetch(`${API_BASE}/stats`)
     return null;
   });
 
+const initialBrandTextPromise = fetch(`${API_BASE}/brand-text`)
+  .then(res => res.ok ? res.json() : null)
+  .catch(err => {
+    console.error('Module-level pre-fetch brand text error:', err);
+    return null;
+  });
+
 const formatImgSrc = (src) => {
   if (src.startsWith('/uploads/')) {
     const origin = API_BASE.replace('/api', '');
@@ -114,6 +121,38 @@ export function AdminProvider({ children }) {
     };
   });
 
+  const [brandText, setBrandText] = useState(() => {
+    try {
+      const cached = localStorage.getItem('velvet_brand_text');
+      if (cached) {
+        return JSON.parse(cached);
+      }
+    } catch (err) {
+      console.error('Error parsing cached brand text:', err);
+    }
+    return {
+      heroEyebrow: '❀ WELCOME TO ❀',
+      heroTitle: 'VELVET VOWS',
+      heroSubtitle: 'Your Dream Event planned with Love and Perfection',
+      homeAboutTitle: 'Where Luxury Meets Tradition',
+      homeAboutTagline: 'We design, plan and curate luxury experiences that blend the grandeur of legacy rituals with the smooth execution of modern timelines.',
+      homePhilosophyTitle: 'Our Philosophy',
+      homePhilosophyDesc: 'Every grand milestone celebration is a sacred narrative. Whether it is an elite corporate gala, a high-profile social anniversary, or a royal wedding, we ensure your story is told with the highest degree of grandeur, precision, and heartfelt emotion, allowing you to live every moment completely hassle-free.',
+      homeOfferingsTitle: 'Premium Offerings',
+      homeOfferingsDesc: 'From bespoke destination scouting, luxury floral layouts, sangeet stage management, and celebrity coordination, to custom traditional rituals, we curate every aspect with our dedicated team of hospitality professionals.',
+      aboutStoryTitle: 'OUR STORY & VISION',
+      aboutStoryTagline: 'Velvet Vows has defined luxury event planning by seamlessly executing traditional heritage integrated with modern grandeur.',
+      aboutPhilosophyTitle: 'Our Philosophy',
+      aboutPhilosophyDesc: 'We believe that a grand event is a sacred journey where families, friends, or organizations connect. Our task is to safeguard the sanctity of these moments by handling all administrative friction, vendor negotiation, travel logs, hotel checklists, stage setups, and decor timelines. We work in the background as silent directors so that you can live the happiest moments of your life fully.',
+      aboutSignatureTitle: 'Signature Style',
+      aboutSignatureDesc: 'Our signature aesthetic is characterized by timeless refinement, rich botanical layouts, golden lighting geometry, and curated traditional craftsmanship. We collaborate with India\'s finest floral designers, local artisans, celebrity decorators, and lighting designers to turn any space into a royal sanctuary.',
+      aboutExecutionTitle: 'End-to-End Execution',
+      aboutExecutionDesc: 'We manage everything from destination mapping, digital RSVP logs, catering consultations, VIP check-in logs, transport logistics, sound design, and final stage coordination. You can trust our team of dedicated event coordinators to run the event with absolute military precision.',
+      taglineTitle: 'Ready to Begin Your Event Journey?',
+      taglineSubtitle: 'Let\'s craft a celebration as unique and beautiful as your story.'
+    };
+  });
+
   const [enquiries, setEnquiries] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -173,6 +212,23 @@ export function AdminProvider({ children }) {
       if (statsData) {
         localStorage.setItem('velvet_stats', JSON.stringify(statsData));
         setStats(statsData);
+      }
+
+      let brandTextData = null;
+      if (isInitial) {
+        brandTextData = await initialBrandTextPromise;
+      }
+
+      if (!brandTextData) {
+        const brandTextRes = await fetch(`${API_BASE}/brand-text`);
+        if (brandTextRes.ok) {
+          brandTextData = await brandTextRes.json();
+        }
+      }
+
+      if (brandTextData) {
+        localStorage.setItem('velvet_brand_text', JSON.stringify(brandTextData));
+        setBrandText(brandTextData);
       }
     } catch (err) {
       console.error('Error fetching public data:', err);
@@ -403,6 +459,36 @@ export function AdminProvider({ children }) {
     }
   }, [logout]);
 
+  // Save Brand Text values
+  const saveBrandText = useCallback(async (newBrandText) => {
+    const token = localStorage.getItem('velvet_token');
+    if (!token) return false;
+
+    try {
+      const res = await fetch(`${API_BASE}/brand-text`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(newBrandText)
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        localStorage.setItem('velvet_brand_text', JSON.stringify(data));
+        setBrandText(data);
+        return true;
+      } else if (res.status === 401) {
+        logout();
+      }
+      return false;
+    } catch (err) {
+      console.error('Error saving brand text:', err);
+      return false;
+    }
+  }, [logout]);
+
   // Submit Enquiry
   const submitEnquiry = useCallback(async (formData) => {
     try {
@@ -453,6 +539,7 @@ export function AdminProvider({ children }) {
         serviceImages,
         youtubeUrl,
         stats,
+        brandText,
         enquiries,
         isLoading,
         addImages,
@@ -461,6 +548,7 @@ export function AdminProvider({ children }) {
         clearAll,
         saveYoutubeUrl,
         saveStats,
+        saveBrandText,
         submitEnquiry,
         deleteEnquiry
       }}

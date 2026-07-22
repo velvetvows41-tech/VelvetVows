@@ -147,7 +147,7 @@ function HomeServiceCard({ svc }) {
 }
 
 export default function Home() {
-  const { heroImages, galleryImages, serviceImages, youtubeUrl, stats } = useAdmin();
+  const { heroImages, galleryImages, serviceImages, youtubeUrl, stats, brandText } = useAdmin();
 
   const findDefaultMeta = (label) => {
     if (!label) return null;
@@ -289,9 +289,9 @@ export default function Home() {
 
         <div className="hero-overlay" aria-hidden="true"></div>
         <div className="hero-content">
-          <p className="hero-eyebrow">❀ WELCOME TO ❀</p>
-          <h1>VELVET VOWS</h1>
-          <p className="hero-sub">Your Dream Event planned with Love and <strong>Perfection</strong></p>
+          <p className="hero-eyebrow">{brandText.heroEyebrow || '❀ WELCOME TO ❀'}</p>
+          <h1>{brandText.heroTitle || 'VELVET VOWS'}</h1>
+          <p className="hero-sub">{brandText.heroSubtitle || 'Your Dream Event planned with Love and Perfection'}</p>
           <Link to="/about" className="hero-cta">Discover Our Story</Link>
         </div>
 
@@ -328,8 +328,8 @@ export default function Home() {
 
       {/* 2. Tagline Strip */}
       <section className="tagline-strip">
-        <h2>Ready to Begin Your Event Journey?</h2>
-        <p>Let's craft a celebration as unique and beautiful as your story.</p>
+        <h2>{brandText.taglineTitle || 'Ready to Begin Your Event Journey?'}</h2>
+        <p>{brandText.taglineSubtitle || "Let's craft a celebration as unique and beautiful as your story."}</p>
         <Link to="/contact" className="tagline-link">Plan My Event</Link>
       </section>
 
@@ -341,9 +341,9 @@ export default function Home() {
           <div className="about-card" style={{ top: '0' }}>
             <div className="about-header">
               <span className="ornament">❀</span>
-              <h2>Where Luxury Meets Tradition</h2>
+              <h2>{brandText.homeAboutTitle || 'Where Luxury Meets Tradition'}</h2>
               <p className="about-tagline">
-                We design, plan and curate luxury experiences that blend the grandeur of legacy rituals with the smooth execution of modern timelines.
+                {brandText.homeAboutTagline || 'We design, plan and curate luxury experiences that blend the grandeur of legacy rituals with the smooth execution of modern timelines.'}
               </p>
             </div>
 
@@ -368,15 +368,15 @@ export default function Home() {
 
             <div className="about-content-grid">
               <div className="about-block">
-                <h3 style={{ display: 'flex', alignItems: 'center' }}><SparklesIcon /> Our Philosophy</h3>
+                <h3 style={{ display: 'flex', alignItems: 'center' }}><SparklesIcon /> {brandText.homePhilosophyTitle || 'Our Philosophy'}</h3>
                 <p>
-                  Every grand milestone celebration is a sacred narrative. Whether it is an elite corporate gala, a high-profile social anniversary, or a royal wedding, we ensure your story is told with the highest degree of grandeur, precision, and heartfelt emotion, allowing you to live every moment completely hassle-free.
+                  {brandText.homePhilosophyDesc || 'Every grand milestone celebration is a sacred narrative. Whether it is an elite corporate gala, a high-profile social anniversary, or a royal wedding, we ensure your story is told with the highest degree of grandeur, precision, and heartfelt emotion, allowing you to live every moment completely hassle-free.'}
                 </p>
               </div>
               <div className="about-block">
-                <h3 style={{ display: 'flex', alignItems: 'center' }}><CrownIcon /> Premium Offerings</h3>
+                <h3 style={{ display: 'flex', alignItems: 'center' }}><CrownIcon /> {brandText.homeOfferingsTitle || 'Premium Offerings'}</h3>
                 <p>
-                  From bespoke destination scouting, luxury floral layouts, sangeet stage management, and celebrity coordination, to custom traditional rituals, we curate every aspect with our dedicated team of hospitality professionals.
+                  {brandText.homeOfferingsDesc || 'From bespoke destination scouting, luxury floral layouts, sangeet stage management, and celebrity coordination, to custom traditional rituals, we curate every aspect with our dedicated team of hospitality professionals.'}
                 </p>
               </div>
             </div>

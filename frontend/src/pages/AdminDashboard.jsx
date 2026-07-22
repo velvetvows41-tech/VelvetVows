@@ -803,6 +803,271 @@ function EnquiriesPanel({ enquiries, onDelete, showToast }) {
   );
 }
 
+// Website Brand Copy editing panel (MERN Premium Feature)
+function BrandTextPanel({ brandText, onSave, showToast }) {
+  const [formData, setFormData] = useState({ ...brandText });
+
+  useEffect(() => {
+    setFormData({ ...brandText });
+  }, [brandText]);
+
+  const handleChange = (key, val) => {
+    setFormData(prev => ({ ...prev, [key]: val }));
+  };
+
+  const handleSave = async (e) => {
+    e.preventDefault();
+    const success = await onSave(formData);
+    if (success) {
+      showToast('✓ Brand texts updated successfully!', 'success');
+    } else {
+      showToast('❌ Failed to update brand texts.', 'error');
+    }
+  };
+
+  return (
+    <div className="yt-panel">
+      <div className="yt-panel-header" style={{ background: 'linear-gradient(135deg, #2a080c, #160003)' }}>
+        <div className="yt-panel-title" style={{ display: 'flex', alignItems: 'center' }}>
+          <span style={{ marginRight: '8px', fontSize: '1.2rem' }}>📝</span>
+          <h3>Website Brand Copy & Texts</h3>
+        </div>
+      </div>
+
+      <div className="yt-panel-body">
+        <p className="yt-hint">
+          Configure all the copy on the website dynamically. Changes will be reflected instantly on the Home Page and About Page.
+        </p>
+
+        <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '28px', marginTop: '16px' }}>
+          {/* Section 1: Hero Section */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', borderBottom: '1px solid rgba(184, 150, 46, 0.15)', paddingBottom: '20px' }}>
+            <h4 style={{ fontFamily: 'Cinzel, serif', color: 'var(--gold-dark)', margin: '0 0 4px', fontSize: '0.95rem', letterSpacing: '1px' }}>1. Hero Banner Content</h4>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <label style={{ fontSize: '0.78rem', fontWeight: 'bold', color: 'var(--brown)', textTransform: 'uppercase', letterSpacing: '1px' }}>Eyebrow Text</label>
+                <input
+                  type="text"
+                  className="yt-input"
+                  value={formData.heroEyebrow || ''}
+                  onChange={e => handleChange('heroEyebrow', e.target.value)}
+                  style={{ width: '100%', boxSizing: 'border-box' }}
+                />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <label style={{ fontSize: '0.78rem', fontWeight: 'bold', color: 'var(--brown)', textTransform: 'uppercase', letterSpacing: '1px' }}>Hero Title</label>
+                <input
+                  type="text"
+                  className="yt-input"
+                  value={formData.heroTitle || ''}
+                  onChange={e => handleChange('heroTitle', e.target.value)}
+                  style={{ width: '100%', boxSizing: 'border-box' }}
+                />
+              </div>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <label style={{ fontSize: '0.78rem', fontWeight: 'bold', color: 'var(--brown)', textTransform: 'uppercase', letterSpacing: '1px' }}>Hero Subtitle</label>
+              <textarea
+                className="yt-input"
+                value={formData.heroSubtitle || ''}
+                onChange={e => handleChange('heroSubtitle', e.target.value)}
+                style={{ width: '100%', boxSizing: 'border-box', height: '60px', padding: '10px', resize: 'vertical' }}
+              />
+            </div>
+          </div>
+
+          {/* Section 2: Home Page About & Pillars */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', borderBottom: '1px solid rgba(184, 150, 46, 0.15)', paddingBottom: '20px' }}>
+            <h4 style={{ fontFamily: 'Cinzel, serif', color: 'var(--gold-dark)', margin: '0 0 4px', fontSize: '0.95rem', letterSpacing: '1px' }}>2. Home Intro ("Where Luxury Meets Tradition")</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <label style={{ fontSize: '0.78rem', fontWeight: 'bold', color: 'var(--brown)', textTransform: 'uppercase', letterSpacing: '1px' }}>About Header Title</label>
+              <input
+                type="text"
+                className="yt-input"
+                value={formData.homeAboutTitle || ''}
+                onChange={e => handleChange('homeAboutTitle', e.target.value)}
+                style={{ width: '100%', boxSizing: 'border-box' }}
+              />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <label style={{ fontSize: '0.78rem', fontWeight: 'bold', color: 'var(--brown)', textTransform: 'uppercase', letterSpacing: '1px' }}>About Subtitle Tagline</label>
+              <textarea
+                className="yt-input"
+                value={formData.homeAboutTagline || ''}
+                onChange={e => handleChange('homeAboutTagline', e.target.value)}
+                style={{ width: '100%', boxSizing: 'border-box', height: '60px', padding: '10px', resize: 'vertical' }}
+              />
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px', marginTop: '6px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <label style={{ fontSize: '0.78rem', fontWeight: 'bold', color: 'var(--brown)', textTransform: 'uppercase', letterSpacing: '1px' }}>Philosophy Title</label>
+                <input
+                  type="text"
+                  className="yt-input"
+                  value={formData.homePhilosophyTitle || ''}
+                  onChange={e => handleChange('homePhilosophyTitle', e.target.value)}
+                  style={{ width: '100%', boxSizing: 'border-box' }}
+                />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <label style={{ fontSize: '0.78rem', fontWeight: 'bold', color: 'var(--brown)', textTransform: 'uppercase', letterSpacing: '1px' }}>Offerings Title</label>
+                <input
+                  type="text"
+                  className="yt-input"
+                  value={formData.homeOfferingsTitle || ''}
+                  onChange={e => handleChange('homeOfferingsTitle', e.target.value)}
+                  style={{ width: '100%', boxSizing: 'border-box' }}
+                />
+              </div>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <label style={{ fontSize: '0.78rem', fontWeight: 'bold', color: 'var(--brown)', textTransform: 'uppercase', letterSpacing: '1px' }}>Philosophy Description</label>
+                <textarea
+                  className="yt-input"
+                  value={formData.homePhilosophyDesc || ''}
+                  onChange={e => handleChange('homePhilosophyDesc', e.target.value)}
+                  style={{ width: '100%', boxSizing: 'border-box', height: '100px', padding: '10px', resize: 'vertical' }}
+                />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <label style={{ fontSize: '0.78rem', fontWeight: 'bold', color: 'var(--brown)', textTransform: 'uppercase', letterSpacing: '1px' }}>Offerings Description</label>
+                <textarea
+                  className="yt-input"
+                  value={formData.homeOfferingsDesc || ''}
+                  onChange={e => handleChange('homeOfferingsDesc', e.target.value)}
+                  style={{ width: '100%', boxSizing: 'border-box', height: '100px', padding: '10px', resize: 'vertical' }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Section 3: Tagline Journey Strip */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', borderBottom: '1px solid rgba(184, 150, 46, 0.15)', paddingBottom: '20px' }}>
+            <h4 style={{ fontFamily: 'Cinzel, serif', color: 'var(--gold-dark)', margin: '0 0 4px', fontSize: '0.95rem', letterSpacing: '1px' }}>3. Tagline Strip (CTA Banner)</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <label style={{ fontSize: '0.78rem', fontWeight: 'bold', color: 'var(--brown)', textTransform: 'uppercase', letterSpacing: '1px' }}>Tagline Title</label>
+              <input
+                type="text"
+                className="yt-input"
+                value={formData.taglineTitle || ''}
+                onChange={e => handleChange('taglineTitle', e.target.value)}
+                style={{ width: '100%', boxSizing: 'border-box' }}
+              />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <label style={{ fontSize: '0.78rem', fontWeight: 'bold', color: 'var(--brown)', textTransform: 'uppercase', letterSpacing: '1px' }}>Tagline Subtitle</label>
+              <textarea
+                className="yt-input"
+                value={formData.taglineSubtitle || ''}
+                onChange={e => handleChange('taglineSubtitle', e.target.value)}
+                style={{ width: '100%', boxSizing: 'border-box', height: '60px', padding: '10px', resize: 'vertical' }}
+              />
+            </div>
+          </div>
+
+          {/* Section 4: About Us Page Content */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', paddingBottom: '10px' }}>
+            <h4 style={{ fontFamily: 'Cinzel, serif', color: 'var(--gold-dark)', margin: '0 0 4px', fontSize: '0.95rem', letterSpacing: '1px' }}>4. About Us Page Details</h4>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <label style={{ fontSize: '0.78rem', fontWeight: 'bold', color: 'var(--brown)', textTransform: 'uppercase', letterSpacing: '1px' }}>Story Header Title</label>
+                <input
+                  type="text"
+                  className="yt-input"
+                  value={formData.aboutStoryTitle || ''}
+                  onChange={e => handleChange('aboutStoryTitle', e.target.value)}
+                  style={{ width: '100%', boxSizing: 'border-box' }}
+                />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <label style={{ fontSize: '0.78rem', fontWeight: 'bold', color: 'var(--brown)', textTransform: 'uppercase', letterSpacing: '1px' }}>Story Subtitle Tagline</label>
+                <input
+                  type="text"
+                  className="yt-input"
+                  value={formData.aboutStoryTagline || ''}
+                  onChange={e => handleChange('aboutStoryTagline', e.target.value)}
+                  style={{ width: '100%', boxSizing: 'border-box' }}
+                />
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px', marginTop: '8px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <label style={{ fontSize: '0.78rem', fontWeight: 'bold', color: 'var(--brown)', textTransform: 'uppercase', letterSpacing: '1px' }}>Philosophy Block Title</label>
+                <input
+                  type="text"
+                  className="yt-input"
+                  value={formData.aboutPhilosophyTitle || ''}
+                  onChange={e => handleChange('aboutPhilosophyTitle', e.target.value)}
+                  style={{ width: '100%', boxSizing: 'border-box' }}
+                />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <label style={{ fontSize: '0.78rem', fontWeight: 'bold', color: 'var(--brown)', textTransform: 'uppercase', letterSpacing: '1px' }}>Philosophy Block Description</label>
+                <textarea
+                  className="yt-input"
+                  value={formData.aboutPhilosophyDesc || ''}
+                  onChange={e => handleChange('aboutPhilosophyDesc', e.target.value)}
+                  style={{ width: '100%', boxSizing: 'border-box', height: '80px', padding: '10px', resize: 'vertical' }}
+                />
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px', marginTop: '8px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <label style={{ fontSize: '0.78rem', fontWeight: 'bold', color: 'var(--brown)', textTransform: 'uppercase', letterSpacing: '1px' }}>Signature Block Title</label>
+                <input
+                  type="text"
+                  className="yt-input"
+                  value={formData.aboutSignatureTitle || ''}
+                  onChange={e => handleChange('aboutSignatureTitle', e.target.value)}
+                  style={{ width: '100%', boxSizing: 'border-box' }}
+                />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <label style={{ fontSize: '0.78rem', fontWeight: 'bold', color: 'var(--brown)', textTransform: 'uppercase', letterSpacing: '1px' }}>Signature Block Description</label>
+                <textarea
+                  className="yt-input"
+                  value={formData.aboutSignatureDesc || ''}
+                  onChange={e => handleChange('aboutSignatureDesc', e.target.value)}
+                  style={{ width: '100%', boxSizing: 'border-box', height: '80px', padding: '10px', resize: 'vertical' }}
+                />
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px', marginTop: '8px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <label style={{ fontSize: '0.78rem', fontWeight: 'bold', color: 'var(--brown)', textTransform: 'uppercase', letterSpacing: '1px' }}>Execution Block Title</label>
+                <input
+                  type="text"
+                  className="yt-input"
+                  value={formData.aboutExecutionTitle || ''}
+                  onChange={e => handleChange('aboutExecutionTitle', e.target.value)}
+                  style={{ width: '100%', boxSizing: 'border-box' }}
+                />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <label style={{ fontSize: '0.78rem', fontWeight: 'bold', color: 'var(--brown)', textTransform: 'uppercase', letterSpacing: '1px' }}>Execution Block Description</label>
+                <textarea
+                  className="yt-input"
+                  value={formData.aboutExecutionDesc || ''}
+                  onChange={e => handleChange('aboutExecutionDesc', e.target.value)}
+                  style={{ width: '100%', boxSizing: 'border-box', height: '80px', padding: '10px', resize: 'vertical' }}
+                />
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" className="save-btn" style={{ padding: '14px 28px', background: 'var(--gold-dark)', color: '#fff', border: 'none', cursor: 'pointer', alignSelf: 'flex-start', marginTop: '10px' }}>
+            ✦ Save Brand Copy Text ✦
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminDashboard() {
   const {
     logout,
@@ -811,6 +1076,7 @@ export default function AdminDashboard() {
     serviceImages,
     youtubeUrl,
     stats,
+    brandText,
     enquiries,
     addImages,
     deleteImage,
@@ -818,6 +1084,7 @@ export default function AdminDashboard() {
     clearAll,
     saveYoutubeUrl,
     saveStats,
+    saveBrandText,
     deleteEnquiry
   } = useAdmin();
 
@@ -834,6 +1101,7 @@ export default function AdminDashboard() {
     { id: 'services', label: 'Service Images', icon: <ServicesIcon />, count: serviceImages.length },
     { id: 'youtube', label: 'YouTube Video', icon: <VideoIcon />, count: null },
     { id: 'stats', label: 'Milestone Stats', icon: <StatsIcon />, count: null },
+    { id: 'brandText', label: 'Brand Copy Text', icon: <span style={{ marginRight: '6px' }}>📝</span>, count: null },
     { id: 'enquiries', label: 'Enquiries', icon: <EnquiriesIcon />, count: enquiries.length }
   ];
 
@@ -939,6 +1207,12 @@ export default function AdminDashboard() {
           <StatsPanel
             stats={stats}
             onSave={saveStats}
+            showToast={triggerToast}
+          />
+        ) : activeTab === 'brandText' ? (
+          <BrandTextPanel
+            brandText={brandText}
+            onSave={saveBrandText}
             showToast={triggerToast}
           />
         ) : activeTab === 'enquiries' ? (

@@ -10,6 +10,7 @@ const User = require('./models/User');
 const Item = require('./models/Item');
 const Video = require('./models/Video');
 const Stats = require('./models/Stats');
+const BrandText = require('./models/BrandText');
 
 // Load environment variables
 dotenv.config();
@@ -56,6 +57,7 @@ app.use('/api/items', require('./routes/items'));
 app.use('/api/video', require('./routes/video'));
 app.use('/api/stats', require('./routes/stats'));
 app.use('/api/enquiries', require('./routes/enquiries'));
+app.use('/api/brand-text', require('./routes/brandText'));
 
 // Serve frontend build static files in production if needed,
 // but for development, we will run the React Vite app on its own port.
@@ -130,6 +132,15 @@ const seedData = async () => {
       });
       await defaultStats.save();
       console.log('Default stats seeded!');
+    }
+
+    // 5. Seed default brand text if none exist
+    const brandTextCount = await BrandText.countDocuments();
+    if (brandTextCount === 0) {
+      console.log('Seeding default brand text values...');
+      const defaultBrandText = new BrandText();
+      await defaultBrandText.save();
+      console.log('Default brand text seeded!');
     }
   } catch (error) {
     console.error('Error seeding data:', error);
