@@ -233,15 +233,17 @@ function ImagesGrid({ type, images, onDelete, onLabel, emptyMsg }) {
                   </div>
                 </div>
               <div className="ig-badge" aria-hidden="true">{idx + 1}</div>
-              <button 
-                className="ig-delete" 
-                onClick={() => handleDelete(img.id)}
-                aria-label={`Delete ${img.label}`}
-                title="Delete"
-                disabled={deletingId === img.id}
-              >
-                {deletingId === img.id ? '...' : '×'}
-              </button>
+              {!(type === 'hero' && (img.id === '1784371669221-1' || img.src.includes('img-1784371669221-508818752.jpg'))) && (
+                <button 
+                  className="ig-delete" 
+                  onClick={() => handleDelete(img.id)}
+                  aria-label={`Delete ${img.label}`}
+                  title="Delete"
+                  disabled={deletingId === img.id}
+                >
+                  {deletingId === img.id ? '...' : '×'}
+                </button>
+              )}
               <div className="ig-label-row" onClick={() => startEdit(img)}>
                 <div style={{ display: 'flex', flexDirection: 'column', width: '100%', padding: '4px 8px' }}>
                   <span

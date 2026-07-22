@@ -50,6 +50,13 @@ const formatImgSrc = (src) => {
   return src;
 };
 
+const HARDCODED_HERO_IMAGE = {
+  id: "1784371669221-1",
+  type: "hero",
+  src: "/uploads/img-1784371669221-508818752.jpg",
+  label: "rich dinner tables covered with blue clothes sparkling glass"
+};
+
 export function AdminProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     return !!localStorage.getItem('velvet_token');
@@ -62,12 +69,16 @@ export function AdminProvider({ children }) {
       const cached = localStorage.getItem('velvet_items');
       if (cached) {
         const items = JSON.parse(cached);
-        return items.filter(item => item.type === 'hero').map(i => ({ ...i, src: formatImgSrc(i.src) }));
+        const filtered = items.filter(item => item.type === 'hero' && item.id !== HARDCODED_HERO_IMAGE.id);
+        return [
+          { ...HARDCODED_HERO_IMAGE, src: formatImgSrc(HARDCODED_HERO_IMAGE.src) },
+          ...filtered.map(i => ({ ...i, src: formatImgSrc(i.src) }))
+        ];
       }
     } catch (err) {
       console.error('Error parsing cached hero images:', err);
     }
-    return [];
+    return [{ ...HARDCODED_HERO_IMAGE, src: formatImgSrc(HARDCODED_HERO_IMAGE.src) }];
   });
 
   const [galleryImages, setGalleryImages] = useState(() => {
@@ -174,7 +185,11 @@ export function AdminProvider({ children }) {
 
       if (items) {
         localStorage.setItem('velvet_items', JSON.stringify(items));
-        setHeroImages(items.filter(item => item.type === 'hero').map(i => ({ ...i, src: formatImgSrc(i.src) })));
+        const filteredHero = items.filter(item => item.type === 'hero' && item.id !== HARDCODED_HERO_IMAGE.id);
+        setHeroImages([
+          { ...HARDCODED_HERO_IMAGE, src: formatImgSrc(HARDCODED_HERO_IMAGE.src) },
+          ...filteredHero.map(i => ({ ...i, src: formatImgSrc(i.src) }))
+        ]);
         setGalleryImages(items.filter(item => item.type === 'gallery').map(i => ({ ...i, src: formatImgSrc(i.src) })));
         setServiceImages(items.filter(item => item.type === 'services').map(i => ({ ...i, src: formatImgSrc(i.src) })));
       }
