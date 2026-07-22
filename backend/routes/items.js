@@ -114,7 +114,7 @@ router.delete('/:id', protect, async (req, res) => {
       return res.status(404).json({ message: 'Item not found' });
     }
 
-    if (item.type === 'hero' && (item.id === '1784371669221-1' || item.src.includes('img-1784371669221-508818752.jpg'))) {
+    if (item.type === 'hero' && (item.id === '1784374660326-hero' || item.src.includes('img-1784374660326-382082045.jpg'))) {
       return res.status(403).json({ message: 'The default hero image cannot be deleted' });
     }
 
@@ -148,7 +148,7 @@ router.delete('/', protect, async (req, res) => {
   try {
     const items = await Item.find({ type });
     for (const item of items) {
-      if (type === 'hero' && (item.id === '1784371669221-1' || item.src.includes('img-1784371669221-508818752.jpg'))) {
+      if (type === 'hero' && (item.id === '1784374660326-hero' || item.src.includes('img-1784374660326-382082045.jpg'))) {
         continue;
       }
       if (item.src.startsWith('/uploads/')) {
@@ -163,7 +163,7 @@ router.delete('/', protect, async (req, res) => {
       }
     }
     if (type === 'hero') {
-      await Item.deleteMany({ type, id: { $ne: '1784371669221-1' }, src: { $not: /img-1784371669221-508818752\.jpg/ } });
+      await Item.deleteMany({ type, id: { $ne: '1784374660326-hero' }, src: { $not: /img-1784374660326-382082045\.jpg/ } });
     } else {
       await Item.deleteMany({ type });
     }

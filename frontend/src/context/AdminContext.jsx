@@ -65,10 +65,10 @@ const formatImgSrc = (src) => {
 };
 
 const HARDCODED_HERO_IMAGE = {
-  id: "1784371669221-1",
+  id: "1784374660326-hero",
   type: "hero",
-  src: "/uploads/img-1784371669221-508818752.jpg",
-  label: "rich dinner tables covered with blue clothes sparkling glass"
+  src: "/uploads/img-1784374660326-382082045.jpg",
+  label: "Venue & Decor Management"
 };
 
 export function AdminProvider({ children }) {

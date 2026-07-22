@@ -233,7 +233,7 @@ function ImagesGrid({ type, images, onDelete, onLabel, emptyMsg }) {
                   </div>
                 </div>
               <div className="ig-badge" aria-hidden="true">{idx + 1}</div>
-              {!(type === 'hero' && (img.id === '1784371669221-1' || img.src.includes('img-1784371669221-508818752.jpg'))) && (
+              {!(type === 'hero' && (img.id === '1784374660326-hero' || img.src.includes('img-1784374660326-382082045.jpg'))) && (
                 <button 
                   className="ig-delete" 
                   onClick={() => handleDelete(img.id)}
