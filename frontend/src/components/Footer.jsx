@@ -36,8 +36,8 @@ export default function Footer() {
             Madhya Pradesh, India - 458001
           </p>
           <p style={{ color: '#ffffff8c', fontSize: '0.84rem', lineHeight: '1.8', marginTop: '10px' }}>
-            Phone: +91 9203781838<br />
-            Email: info@velvetvows.in
+            Phone: +91 9302899270<br />
+            Email: eventvelvetvows@gmail.com
           </p>
         </div>
       </div>

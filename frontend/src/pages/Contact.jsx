@@ -219,18 +219,6 @@ export default function Contact() {
                       placeholder="Enter your phone number"
                     />
                   </div>
-
-                  <div className="form-group">
-                    <label htmlFor="subject">Event Type / Theme</label>
-                    <select id="subject" name="subject" value={formData.subject} onChange={handleChange}>
-                      <option value="royal-heritage">Royal Heritage Wedding</option>
-                      <option value="traditional">Traditional Indian Wedding</option>
-                      <option value="bollywood">Bollywood Story Wedding</option>
-                      <option value="corporate-gala">Elite Corporate Gala</option>
-                      <option value="social-milestone">Private Social Celebration</option>
-                      <option value="other">Other / General Enquiry</option>
-                    </select>
-                  </div>
                 </div>
 
                 {/* New Luxury Qualification Fields */}
@@ -304,7 +292,7 @@ export default function Contact() {
                       <span className="btn-spinner"></span> Sending...
                     </>
                   ) : (
-                    '❀ Submit Inquiry'
+                    '❀ Submit Enquiry'
                   )}
                 </button>
               </form>
