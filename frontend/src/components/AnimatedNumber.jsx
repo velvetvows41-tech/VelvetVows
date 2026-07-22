@@ -1,18 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 export default function AnimatedNumber({ value }) {
-  const [count, setCount] = useState(0);
+  const matches = value.toString().match(/^(\d+)(.*)$/);
+  const targetNumber = matches ? parseInt(matches[1], 10) : 0;
+  const suffix = matches ? matches[2] : '';
+
+  const [count, setCount] = useState(targetNumber);
   const elementRef = useRef(null);
   const hasAnimated = useRef(false);
 
   useEffect(() => {
-    const matches = value.toString().match(/^(\d+)(.*)$/);
     if (!matches) {
       setCount(value);
       return;
     }
-
-    const targetNumber = parseInt(matches[1], 10);
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -41,6 +42,7 @@ export default function AnimatedNumber({ value }) {
             }
           };
 
+          setCount(0); // Reset to 0 to start the count-up animation
           window.requestAnimationFrame(step);
         }
       },
@@ -57,10 +59,7 @@ export default function AnimatedNumber({ value }) {
         observer.unobserve(currentRef);
       }
     };
-  }, [value]);
-
-  const matches = value.toString().match(/^(\d+)(.*)$/);
-  const suffix = matches ? matches[2] : '';
+  }, [value, targetNumber, matches]);
 
   return (
     <span ref={elementRef}>
