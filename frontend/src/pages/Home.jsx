@@ -82,14 +82,35 @@ const defaultServices = [
 
 const defaultTestimonials = [
   {
-    id: 1,
-    text: "Some testimonials",
-    couple: "Name"
+    _id: 'default-t-1',
+    text: "Velvet Vows took care of everything from hotel check-in desks to stage timelines. We were guests at our own wedding!",
+    couple: "Aditi & Kabir"
   },
   {
-    id: 2,
-    text: "Some more testimonials",
-    couple: "Names"
+    _id: 'default-t-2',
+    text: "The heritage mandap decor looked like a royal dream. Highly recommend their bespoke planning services!",
+    couple: "Rohan & Riya"
+  }
+];
+
+const defaultPortfolios = [
+  {
+    _id: 'default-p-1',
+    title: 'Traditional Malva Heritage Decor',
+    category: 'Theme Curation',
+    description: 'A tribute to local heritage. We utilize raw brass vessels, native marigolds, handmade terracotta details, and block-print textiles to frame your ancestral legacy with absolute class and sophistication.',
+    src: '/images/malva_heritage_decor.jpg',
+    ctaText: 'Consult on Heritage Design',
+    ctaLink: '/contact'
+  },
+  {
+    _id: 'default-p-2',
+    title: 'Immersive Walkways & Arrival Experiences',
+    category: 'Scenography',
+    description: 'Creating a sense of wonder from the very first step. Our walkway installations feature custom architectural arches, fog and mist coordination, soft lighting arrays, and lush floral tunnels to guide your guests.',
+    src: '/images/immersive_way.jpg',
+    ctaText: 'Request Arrival Scenography',
+    ctaLink: '/contact'
   }
 ];
 
@@ -147,7 +168,7 @@ function HomeServiceCard({ svc }) {
 }
 
 export default function Home() {
-  const { heroImages, galleryImages, serviceImages, youtubeUrl, stats, brandText } = useAdmin();
+  const { heroImages, galleryImages, serviceImages, youtubeUrl, stats, brandText, portfolios, testimonials } = useAdmin();
 
   const findDefaultMeta = (label) => {
     if (!label) return null;
@@ -208,7 +229,7 @@ export default function Home() {
 
   // State for Testimonials Slider
   const [currentTesti, setCurrentTesti] = useState(0);
-  const activeTestimonials = defaultTestimonials;
+  const activeTestimonials = testimonials && testimonials.length > 0 ? testimonials : defaultTestimonials;
 
   const nextTesti = useCallback(() => {
     setCurrentTesti(prev => (prev + 1) % activeTestimonials.length);
@@ -400,54 +421,72 @@ export default function Home() {
         </div>
 
         <div className="showcase-grid" style={{ display: 'flex', flexDirection: 'column', gap: '80px', maxWidth: '1100px', margin: '40px auto 0', padding: '0 24px' }}>
-          
-          {/* Portfolio 1: Malva Heritage */}
-          <div className="showcase-item" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '40px', alignItems: 'center' }}>
-            <div className="showcase-media-container" style={{ position: 'relative', overflow: 'hidden', borderRadius: '12px', boxShadow: '0 10px 30px rgba(74, 18, 26, 0.08)' }}>
-              <img 
-                src="/images/malva_heritage_decor.jpg" 
-                alt="Traditional Malva Heritage Decor" 
-                className="zoom-hover-img"
-                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-              />
-            </div>
-            <div className="showcase-info" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <span style={{ fontSize: '0.72rem', letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--gold)', fontFamily: 'Cinzel, serif', fontWeight: 'bold' }}>Theme Curation</span>
-              <h3 style={{ fontFamily: 'Cinzel, serif', fontSize: '1.6rem', color: 'var(--brown)', margin: '0' }}>Traditional Malva Heritage Decor</h3>
-              <p style={{ fontSize: '0.94rem', color: 'var(--text)', lineHeight: '1.7', margin: '0' }}>
-                A tribute to local heritage. We utilize raw brass vessels, native marigolds, handmade terracotta details, and block-print textiles to frame your ancestral legacy with absolute class and sophistication.
-              </p>
-              <Link to="/contact" className="tagline-link" style={{ alignSelf: 'flex-start', margin: '10px 0 0', padding: '10px 24px' }}>Consult on Heritage Design</Link>
-            </div>
-          </div>
+          {activePortfolios.map((portfolio, idx) => {
+            const isReverse = idx % 2 === 1;
+            const content = (
+              <>
+                <div className="showcase-media-container" style={{ position: 'relative', overflow: 'hidden', borderRadius: '12px', boxShadow: '0 10px 30px rgba(74, 18, 26, 0.08)' }}>
+                  <img 
+                    src={portfolio.src} 
+                    alt={portfolio.title} 
+                    className="zoom-hover-img"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    onError={(e) => {
+                      if (portfolio.src.includes('immersive_way')) {
+                        e.target.src = '/images/immersive_walkway.jpg';
+                      }
+                    }}
+                  />
+                </div>
+                <div className="showcase-info" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <span style={{ fontSize: '0.72rem', letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--gold)', fontFamily: 'Cinzel, serif', fontWeight: 'bold' }}>{portfolio.category}</span>
+                  <h3 style={{ fontFamily: 'Cinzel, serif', fontSize: '1.6rem', color: 'var(--brown)', margin: '0' }}>{portfolio.title}</h3>
+                  <p style={{ fontSize: '0.94rem', color: 'var(--text)', lineHeight: '1.7', margin: '0' }}>
+                    {portfolio.description}
+                  </p>
+                  <Link to={portfolio.ctaLink || '/contact'} className="tagline-link" style={{ alignSelf: 'flex-start', margin: '10px 0 0', padding: '10px 24px' }}>
+                    {portfolio.ctaText || 'Consult on Design'}
+                  </Link>
+                </div>
+              </>
+            );
 
-          {/* Portfolio 2: Immersive Walkways */}
-          <div className="showcase-item showcase-item--reverse" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '40px', alignItems: 'center' }}>
-            <div className="showcase-info" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <span style={{ fontSize: '0.72rem', letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--gold)', fontFamily: 'Cinzel, serif', fontWeight: 'bold' }}>Scenography</span>
-              <h3 style={{ fontFamily: 'Cinzel, serif', fontSize: '1.6rem', color: 'var(--brown)', margin: '0' }}>Immersive Walkways & Arrival Experiences</h3>
-              <p style={{ fontSize: '0.94rem', color: 'var(--text)', lineHeight: '1.7', margin: '0' }}>
-                Creating a sense of wonder from the very first step. Our walkway installations feature custom architectural arches, fog and mist coordination, soft lighting arrays, and lush floral tunnels to guide your guests.
-              </p>
-              <Link to="/contact" className="tagline-link" style={{ alignSelf: 'flex-start', margin: '10px 0 0', padding: '10px 24px' }}>Request Arrival Scenography</Link>
-            </div>
-            <div className="showcase-media-container" style={{ position: 'relative', overflow: 'hidden', borderRadius: '12px', boxShadow: '0 10px 30px rgba(74, 18, 26, 0.08)' }}>
-              <img 
-                src="/images/immersive_way.jpg" 
-                className="zoom-hover-img"
-                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                onError={(e) => {
-                  // Fallback to correct file path
-                  e.target.src = '/images/immersive_way.jpg';
-                  e.target.onerror = (evt) => {
-                    evt.target.src = '/images/immersive_walkway.jpg';
-                  }
-                }}
-                alt="Immersive Walkways & Arrival Experiences" 
-              />
-            </div>
-          </div>
-
+            return (
+              <div 
+                key={portfolio._id || portfolio.id || idx} 
+                className={`showcase-item ${isReverse ? 'showcase-item--reverse' : ''}`}
+                style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '40px', alignItems: 'center' }}
+              >
+                {isReverse ? (
+                  <>
+                    <div className="showcase-info" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                      <span style={{ fontSize: '0.72rem', letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--gold)', fontFamily: 'Cinzel, serif', fontWeight: 'bold' }}>{portfolio.category}</span>
+                      <h3 style={{ fontFamily: 'Cinzel, serif', fontSize: '1.6rem', color: 'var(--brown)', margin: '0' }}>{portfolio.title}</h3>
+                      <p style={{ fontSize: '0.94rem', color: 'var(--text)', lineHeight: '1.7', margin: '0' }}>
+                        {portfolio.description}
+                      </p>
+                      <Link to={portfolio.ctaLink || '/contact'} className="tagline-link" style={{ alignSelf: 'flex-start', margin: '10px 0 0', padding: '10px 24px' }}>
+                        {portfolio.ctaText || 'Consult on Design'}
+                      </Link>
+                    </div>
+                    <div className="showcase-media-container" style={{ position: 'relative', overflow: 'hidden', borderRadius: '12px', boxShadow: '0 10px 30px rgba(74, 18, 26, 0.08)' }}>
+                      <img 
+                        src={portfolio.src} 
+                        alt={portfolio.title} 
+                        className="zoom-hover-img"
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                        onError={(e) => {
+                          if (portfolio.src.includes('immersive_way')) {
+                            e.target.src = '/images/immersive_walkway.jpg';
+                          }
+                        }}
+                      />
+                    </div>
+                  </>
+                ) : content}
+              </div>
+            );
+          })}
         </div>
       </section>
 

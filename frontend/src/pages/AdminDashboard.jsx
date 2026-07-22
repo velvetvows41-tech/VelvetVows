@@ -1106,6 +1106,428 @@ function BrandTextPanel({ brandText, onSave, showToast }) {
   );
 }
 
+// Portfolio editing panel (MERN Premium Feature)
+function PortfolioPanel({ portfolios, onAdd, onUpdate, onDelete, showToast }) {
+  const [title, setTitle] = useState('');
+  const [category, setCategory] = useState('Theme Curation');
+  const [description, setDescription] = useState('');
+  const [src, setSrc] = useState('');
+  const [ctaText, setCtaText] = useState('Consult on Design');
+  const [ctaLink, setCtaLink] = useState('/contact');
+  
+  const [isSaving, setIsSaving] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 1200;
+        const MAX_HEIGHT = 1200;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
+        setSrc(dataUrl);
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const resetForm = () => {
+    setTitle('');
+    setCategory('Theme Curation');
+    setDescription('');
+    setSrc('');
+    setCtaText('Consult on Design');
+    setCtaLink('/contact');
+    setEditingId(null);
+  };
+
+  const handleEditClick = (p) => {
+    setEditingId(p._id);
+    setTitle(p.title);
+    setCategory(p.category);
+    setDescription(p.description);
+    setSrc(p.src);
+    setCtaText(p.ctaText || 'Consult on Design');
+    setCtaLink(p.ctaLink || '/contact');
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!title.trim() || !description.trim() || !src) {
+      showToast('❌ Please specify a title, description, and upload an image.', 'error');
+      return;
+    }
+
+    setIsSaving(true);
+    let success = false;
+    if (editingId) {
+      success = await onUpdate(editingId, { title, category, description, src, ctaText, ctaLink });
+      if (success) showToast('✓ Portfolio updated successfully!', 'success');
+    } else {
+      success = await onAdd({ title, category, description, src, ctaText, ctaLink });
+      if (success) showToast('✓ Portfolio created successfully!', 'success');
+    }
+    setIsSaving(false);
+
+    if (success) {
+      resetForm();
+    } else {
+      showToast('❌ Failed to save portfolio.', 'error');
+    }
+  };
+
+  const handleDeleteClick = async (id) => {
+    if (window.confirm('Are you sure you want to delete this portfolio showcase?')) {
+      setDeletingId(id);
+      const success = await onDelete(id);
+      setDeletingId(null);
+      if (success) {
+        showToast('✓ Portfolio deleted.', 'success');
+      } else {
+        showToast('❌ Failed to delete portfolio.', 'error');
+      }
+    }
+  };
+
+  return (
+    <div className="yt-panel">
+      <div className="yt-panel-header" style={{ background: 'linear-gradient(135deg, #160003, #2a080c)' }}>
+        <div className="yt-panel-title" style={{ display: 'flex', alignItems: 'center' }}>
+          <span style={{ marginRight: '8px', fontSize: '1.2rem' }}>💼</span>
+          <h3>Curated Portfolios Showcase</h3>
+        </div>
+      </div>
+
+      <div className="yt-panel-body">
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px', background: 'rgba(74, 18, 26, 0.02)', padding: '20px', borderRadius: '8px', border: '1px solid rgba(74, 18, 26, 0.08)' }}>
+          <h4 style={{ margin: '0 0 10px 0', color: 'var(--brown)', fontFamily: 'Cinzel, serif' }}>
+            {editingId ? 'Edit Portfolio Showcase' : 'Create New Portfolio Showcase'}
+          </h4>
+          
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <label style={{ fontSize: '0.78rem', fontWeight: 'bold', color: 'var(--brown)' }}>Portfolio Title</label>
+              <input
+                type="text"
+                className="yt-input"
+                value={title}
+                onChange={e => setTitle(e.target.value)}
+                placeholder="e.g. Royal Rajputana Mandap Curation"
+                style={{ width: '100%', boxSizing: 'border-box' }}
+              />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <label style={{ fontSize: '0.78rem', fontWeight: 'bold', color: 'var(--brown)' }}>Category / Tag</label>
+              <input
+                type="text"
+                className="yt-input"
+                value={category}
+                onChange={e => setCategory(e.target.value)}
+                placeholder="e.g. Theme Curation or Scenography"
+                style={{ width: '100%', boxSizing: 'border-box' }}
+              />
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            <label style={{ fontSize: '0.78rem', fontWeight: 'bold', color: 'var(--brown)' }}>Showcase Description</label>
+            <textarea
+              className="yt-input"
+              value={description}
+              onChange={e => setDescription(e.target.value)}
+              placeholder="Detailed description of styling elements, marigolds, local weaves, custom arches..."
+              style={{ width: '100%', boxSizing: 'border-box', height: '80px', resize: 'vertical' }}
+            />
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <label style={{ fontSize: '0.78rem', fontWeight: 'bold', color: 'var(--brown)' }}>CTA Button Text</label>
+              <input
+                type="text"
+                className="yt-input"
+                value={ctaText}
+                onChange={e => setCtaText(e.target.value)}
+                placeholder="e.g. Consult on Design"
+                style={{ width: '100%', boxSizing: 'border-box' }}
+              />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <label style={{ fontSize: '0.78rem', fontWeight: 'bold', color: 'var(--brown)' }}>CTA Link Path</label>
+              <input
+                type="text"
+                className="yt-input"
+                value={ctaLink}
+                onChange={e => setCtaLink(e.target.value)}
+                placeholder="e.g. /contact"
+                style={{ width: '100%', boxSizing: 'border-box' }}
+              />
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '5px' }}>
+            <label style={{ fontSize: '0.78rem', fontWeight: 'bold', color: 'var(--brown)' }}>Showcase Cover Photo</label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap' }}>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                style={{ fontSize: '0.85rem' }}
+              />
+              {src && (
+                <div style={{ position: 'relative', width: '100px', height: '65px', borderRadius: '4px', overflow: 'hidden', border: '1px solid var(--gold)' }}>
+                  <img src={src} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: '12px', marginTop: '10px' }}>
+            <button type="submit" className="yt-save-btn" disabled={isSaving} style={{ padding: '10px 24px' }}>
+              {isSaving ? 'Saving...' : editingId ? 'Update Showcase' : 'Create Showcase'}
+            </button>
+            {editingId && (
+              <button type="button" className="yt-save-btn" onClick={resetForm} style={{ padding: '10px 24px', background: '#95a5a6' }}>
+                Cancel
+              </button>
+            )}
+          </div>
+        </form>
+
+        <div style={{ marginTop: '30px' }}>
+          <h4 style={{ color: 'var(--brown)', borderBottom: '1px solid rgba(74, 18, 26, 0.08)', paddingBottom: '8px', fontFamily: 'Cinzel, serif' }}>
+            Existing Portfolio Showcases ({portfolios.length})
+          </h4>
+
+          {portfolios.length === 0 ? (
+            <p style={{ color: 'var(--muted)', fontSize: '0.9rem', textAlign: 'center', padding: '20px 0' }}>No portfolio items uploaded yet. Create one above!</p>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '15px' }}>
+              {portfolios.map(p => (
+                <div 
+                  key={p._id} 
+                  style={{ display: 'flex', gap: '20px', padding: '16px', border: '1px solid rgba(74, 18, 26, 0.08)', borderRadius: '8px', background: '#fff', flexWrap: 'wrap' }}
+                >
+                  <div style={{ width: '120px', height: '80px', borderRadius: '6px', overflow: 'hidden', border: '1px solid #eee', flexShrink: 0 }}>
+                    <img src={p.src} alt={p.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                  <div style={{ flex: '1', minWidth: '200px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                      <h5 style={{ margin: '0', fontSize: '1.05rem', color: 'var(--brown)' }}>{p.title}</h5>
+                      <span style={{ fontSize: '0.68rem', background: 'var(--gold-dark)', color: '#fff', padding: '2px 8px', borderRadius: '10px', textTransform: 'uppercase', fontWeight: 'bold' }}>{p.category}</span>
+                    </div>
+                    <p style={{ margin: '4px 0', fontSize: '0.86rem', color: 'var(--text)', lineHeight: '1.5' }}>{p.description}</p>
+                    <div style={{ fontSize: '0.78rem', color: 'var(--muted)' }}>
+                      CTA: <strong>{p.ctaText}</strong> &rarr; <code>{p.ctaLink}</code>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center', alignSelf: 'flex-start' }}>
+                    <button 
+                      onClick={() => handleEditClick(p)} 
+                      style={{ padding: '6px 12px', fontSize: '0.78rem', background: 'var(--gold-dark)', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                    >
+                      Edit
+                    </button>
+                    <button 
+                      onClick={() => handleDeleteClick(p._id)} 
+                      disabled={deletingId === p._id}
+                      style={{ padding: '6px 12px', fontSize: '0.78rem', background: '#c0392b', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                    >
+                      {deletingId === p._id ? 'Deleting...' : 'Delete'}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Testimonials editing panel (MERN Premium Feature)
+function TestimonialPanel({ testimonials, onAdd, onUpdate, onDelete, showToast }) {
+  const [couple, setCouple] = useState('');
+  const [text, setText] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
+
+  const resetForm = () => {
+    setCouple('');
+    setText('');
+    setEditingId(null);
+  };
+
+  const handleEditClick = (t) => {
+    setEditingId(t._id);
+    setCouple(t.couple);
+    setText(t.text);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!couple.trim() || !text.trim()) {
+      showToast('❌ Please specify both couple names and the review text.', 'error');
+      return;
+    }
+
+    setIsSaving(true);
+    let success = false;
+    if (editingId) {
+      success = await onUpdate(editingId, { couple, text });
+      if (success) showToast('✓ Testimonial updated successfully!', 'success');
+    } else {
+      success = await onAdd({ couple, text });
+      if (success) showToast('✓ Testimonial added successfully!', 'success');
+    }
+    setIsSaving(false);
+
+    if (success) {
+      resetForm();
+    } else {
+      showToast('❌ Failed to save testimonial.', 'error');
+    }
+  };
+
+  const handleDeleteClick = async (id) => {
+    if (window.confirm('Delete this client testimonial?')) {
+      setDeletingId(id);
+      const success = await onDelete(id);
+      setDeletingId(null);
+      if (success) {
+        showToast('✓ Testimonial deleted.', 'success');
+      } else {
+        showToast('❌ Failed to delete testimonial.', 'error');
+      }
+    }
+  };
+
+  return (
+    <div className="yt-panel">
+      <div className="yt-panel-header" style={{ background: 'linear-gradient(135deg, #160003, #2a080c)' }}>
+        <div className="yt-panel-title" style={{ display: 'flex', alignItems: 'center' }}>
+          <span style={{ marginRight: '8px', fontSize: '1.2rem' }}>💬</span>
+          <h3>Client Testimonials</h3>
+        </div>
+      </div>
+
+      <div className="yt-panel-body">
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px', background: 'rgba(74, 18, 26, 0.02)', padding: '20px', borderRadius: '8px', border: '1px solid rgba(74, 18, 26, 0.08)' }}>
+          <h4 style={{ margin: '0 0 10px 0', color: 'var(--brown)', fontFamily: 'Cinzel, serif' }}>
+            {editingId ? 'Edit Testimonial' : 'Add New Client Testimonial'}
+          </h4>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            <label style={{ fontSize: '0.78rem', fontWeight: 'bold', color: 'var(--brown)' }}>Couple / Author Name</label>
+            <input
+              type="text"
+              className="yt-input"
+              value={couple}
+              onChange={e => setCouple(e.target.value)}
+              placeholder="e.g. Aditi & Kabir"
+              style={{ width: '100%', boxSizing: 'border-box' }}
+            />
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            <label style={{ fontSize: '0.78rem', fontWeight: 'bold', color: 'var(--brown)' }}>Review Text</label>
+            <textarea
+              className="yt-input"
+              value={text}
+              onChange={e => setText(e.target.value)}
+              placeholder="Write the couple's review quote here..."
+              style={{ width: '100%', boxSizing: 'border-box', height: '100px', resize: 'vertical' }}
+            />
+          </div>
+
+          <div style={{ display: 'flex', gap: '12px', marginTop: '10px' }}>
+            <button type="submit" className="yt-save-btn" disabled={isSaving} style={{ padding: '10px 24px' }}>
+              {isSaving ? 'Saving...' : editingId ? 'Update Testimonial' : 'Add Testimonial'}
+            </button>
+            {editingId && (
+              <button type="button" className="yt-save-btn" onClick={resetForm} style={{ padding: '10px 24px', background: '#95a5a6' }}>
+                Cancel
+              </button>
+            )}
+          </div>
+        </form>
+
+        <div style={{ marginTop: '30px' }}>
+          <h4 style={{ color: 'var(--brown)', borderBottom: '1px solid rgba(74, 18, 26, 0.08)', paddingBottom: '8px', fontFamily: 'Cinzel, serif' }}>
+            Active Client Testimonials ({testimonials.length})
+          </h4>
+
+          {testimonials.length === 0 ? (
+            <p style={{ color: 'var(--muted)', fontSize: '0.9rem', textAlign: 'center', padding: '20px 0' }}>No testimonials added yet. Create one above!</p>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '15px' }}>
+              {testimonials.map(t => (
+                <div 
+                  key={t._id} 
+                  style={{ display: 'flex', gap: '20px', padding: '16px', border: '1px solid rgba(74, 18, 26, 0.08)', borderRadius: '8px', background: '#fff', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center' }}
+                >
+                  <div style={{ flex: '1', minWidth: '200px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <p style={{ margin: '0', fontSize: '0.92rem', color: 'var(--text)', fontStyle: 'italic', lineHeight: '1.6' }}>
+                      "{t.text}"
+                    </p>
+                    <span style={{ fontSize: '0.8rem', fontWeight: 'bold', color: 'var(--gold-dark)', fontFamily: 'Cinzel, serif' }}>
+                      — {t.couple}
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <button 
+                      onClick={() => handleEditClick(t)} 
+                      style={{ padding: '6px 12px', fontSize: '0.78rem', background: 'var(--gold-dark)', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                    >
+                      Edit
+                    </button>
+                    <button 
+                      onClick={() => handleDeleteClick(t._id)} 
+                      disabled={deletingId === t._id}
+                      style={{ padding: '6px 12px', fontSize: '0.78rem', background: '#c0392b', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                    >
+                      {deletingId === t._id ? 'Deleting...' : 'Delete'}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminDashboard() {
   const {
     logout,
@@ -1115,6 +1537,8 @@ export default function AdminDashboard() {
     youtubeUrl,
     stats,
     brandText,
+    portfolios,
+    testimonials,
     enquiries,
     addImages,
     deleteImage,
@@ -1123,7 +1547,13 @@ export default function AdminDashboard() {
     saveYoutubeUrl,
     saveStats,
     saveBrandText,
-    deleteEnquiry
+    deleteEnquiry,
+    addPortfolio,
+    updatePortfolio,
+    deletePortfolio,
+    addTestimonial,
+    updateTestimonial,
+    deleteTestimonial
   } = useAdmin();
 
   const [activeTab, setActiveTab] = useState('hero');
@@ -1137,6 +1567,8 @@ export default function AdminDashboard() {
     { id: 'hero', label: 'Hero Slider', icon: <SliderIcon />, count: heroImages.length },
     { id: 'gallery', label: 'Gallery', icon: <GalleryIcon />, count: galleryImages.length },
     { id: 'services', label: 'Service Images', icon: <ServicesIcon />, count: serviceImages.length },
+    { id: 'portfolio', label: 'Portfolios', icon: <span style={{ marginRight: '6px' }}>💼</span>, count: portfolios.length },
+    { id: 'testimonials', label: 'Testimonials', icon: <span style={{ marginRight: '6px' }}>💬</span>, count: testimonials.length },
     { id: 'youtube', label: 'YouTube Video', icon: <VideoIcon />, count: null },
     { id: 'stats', label: 'Milestone Stats', icon: <StatsIcon />, count: null },
     { id: 'brandText', label: 'Brand Copy Text', icon: <span style={{ marginRight: '6px' }}>📝</span>, count: null },
@@ -1208,9 +1640,9 @@ export default function AdminDashboard() {
         <div className="admin-stat-card admin-stat-card--total">
           <span className="admin-stat-icon"><StatsIcon size={24} color="var(--gold-dark)" /></span>
           <span className="admin-stat-num">
-            {heroImages.length + galleryImages.length + serviceImages.length}
+            {heroImages.length + galleryImages.length + serviceImages.length + portfolios.length}
           </span>
-          <span className="admin-stat-label">Total DB Images</span>
+          <span className="admin-stat-label">Total DB Items</span>
         </div>
       </div>
 
@@ -1259,6 +1691,22 @@ export default function AdminDashboard() {
             onDelete={deleteEnquiry}
             showToast={triggerToast}
           />
+        ) : activeTab === 'portfolio' ? (
+          <PortfolioPanel
+            portfolios={portfolios}
+            onAdd={addPortfolio}
+            onUpdate={updatePortfolio}
+            onDelete={deletePortfolio}
+            showToast={triggerToast}
+          />
+        ) : activeTab === 'testimonials' ? (
+          <TestimonialPanel
+            testimonials={testimonials}
+            onAdd={addTestimonial}
+            onUpdate={updateTestimonial}
+            onDelete={deleteTestimonial}
+            showToast={triggerToast}
+          />
         ) : (
           <DashPanel
             {...panels[activeTab]}
@@ -1281,6 +1729,12 @@ export default function AdminDashboard() {
           </li>
           <li>
             <strong>Gallery:</strong> Images will display in the infinite scroll marquee gallery. Click labels to rename them.
+          </li>
+          <li>
+            <strong>Portfolios:</strong> Manage the "Curated Portfolios" section on the homepage. Upload styling showcase images, set tags, and write custom descriptions.
+          </li>
+          <li>
+            <strong>Testimonials:</strong> Add and configure multiple client reviews dynamically. The review slider updates automatically.
           </li>
           <li>
             <strong>Milestone Stats:</strong> Manage the live counters (e.g. Years of Grace, Events Crafted) shown on the homepage and about sections.

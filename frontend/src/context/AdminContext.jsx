@@ -42,6 +42,20 @@ const initialBrandTextPromise = fetch(`${API_BASE}/brand-text`)
     return null;
   });
 
+const initialPortfolioPromise = fetch(`${API_BASE}/portfolio`)
+  .then(res => res.ok ? res.json() : null)
+  .catch(err => {
+    console.error('Module-level pre-fetch portfolio error:', err);
+    return null;
+  });
+
+const initialTestimonialPromise = fetch(`${API_BASE}/testimonial`)
+  .then(res => res.ok ? res.json() : null)
+  .catch(err => {
+    console.error('Module-level pre-fetch testimonial error:', err);
+    return null;
+  });
+
 const formatImgSrc = (src) => {
   if (src.startsWith('/uploads/')) {
     const origin = API_BASE.replace('/api', '');
@@ -103,6 +117,30 @@ export function AdminProvider({ children }) {
       }
     } catch (err) {
       console.error('Error parsing cached service images:', err);
+    }
+    return [];
+  });
+
+  const [portfolios, setPortfolios] = useState(() => {
+    try {
+      const cached = localStorage.getItem('velvet_portfolios');
+      if (cached) {
+        return JSON.parse(cached).map(p => ({ ...p, src: formatImgSrc(p.src) }));
+      }
+    } catch (err) {
+      console.error('Error parsing cached portfolios:', err);
+    }
+    return [];
+  });
+
+  const [testimonials, setTestimonials] = useState(() => {
+    try {
+      const cached = localStorage.getItem('velvet_testimonials');
+      if (cached) {
+        return JSON.parse(cached);
+      }
+    } catch (err) {
+      console.error('Error parsing cached testimonials:', err);
     }
     return [];
   });
@@ -244,6 +282,38 @@ export function AdminProvider({ children }) {
       if (brandTextData) {
         localStorage.setItem('velvet_brand_text', JSON.stringify(brandTextData));
         setBrandText(brandTextData);
+      }
+
+      // Fetch Portfolios
+      let portfolioData = null;
+      if (isInitial) {
+        portfolioData = await initialPortfolioPromise;
+      }
+      if (!portfolioData) {
+        const pRes = await fetch(`${API_BASE}/portfolio`);
+        if (pRes.ok) {
+          portfolioData = await pRes.json();
+        }
+      }
+      if (portfolioData) {
+        localStorage.setItem('velvet_portfolios', JSON.stringify(portfolioData));
+        setPortfolios(portfolioData.map(p => ({ ...p, src: formatImgSrc(p.src) })));
+      }
+
+      // Fetch Testimonials
+      let testimonialData = null;
+      if (isInitial) {
+        testimonialData = await initialTestimonialPromise;
+      }
+      if (!testimonialData) {
+        const tRes = await fetch(`${API_BASE}/testimonial`);
+        if (tRes.ok) {
+          testimonialData = await tRes.json();
+        }
+      }
+      if (testimonialData) {
+        localStorage.setItem('velvet_testimonials', JSON.stringify(testimonialData));
+        setTestimonials(testimonialData);
       }
     } catch (err) {
       console.error('Error fetching public data:', err);
@@ -525,6 +595,160 @@ export function AdminProvider({ children }) {
     }
   }, []);
 
+  // Portfolio CRUD operations
+  const addPortfolio = useCallback(async (portfolioData) => {
+    const token = localStorage.getItem('velvet_token');
+    if (!token) return false;
+
+    try {
+      const res = await fetch(`${API_BASE}/portfolio`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(portfolioData)
+      });
+
+      if (res.ok) {
+        await fetchData();
+        return true;
+      }
+      if (res.status === 401) logout();
+      return false;
+    } catch (err) {
+      console.error('Error adding portfolio:', err);
+      return false;
+    }
+  }, [fetchData, logout]);
+
+  const updatePortfolio = useCallback(async (id, portfolioData) => {
+    const token = localStorage.getItem('velvet_token');
+    if (!token) return false;
+
+    try {
+      const res = await fetch(`${API_BASE}/portfolio/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(portfolioData)
+      });
+
+      if (res.ok) {
+        await fetchData();
+        return true;
+      }
+      if (res.status === 401) logout();
+      return false;
+    } catch (err) {
+      console.error('Error updating portfolio:', err);
+      return false;
+    }
+  }, [fetchData, logout]);
+
+  const deletePortfolio = useCallback(async (id) => {
+    const token = localStorage.getItem('velvet_token');
+    if (!token) return false;
+
+    try {
+      const res = await fetch(`${API_BASE}/portfolio/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (res.ok) {
+        await fetchData();
+        return true;
+      }
+      if (res.status === 401) logout();
+      return false;
+    } catch (err) {
+      console.error('Error deleting portfolio:', err);
+      return false;
+    }
+  }, [fetchData, logout]);
+
+  // Testimonial CRUD operations
+  const addTestimonial = useCallback(async (testiData) => {
+    const token = localStorage.getItem('velvet_token');
+    if (!token) return false;
+
+    try {
+      const res = await fetch(`${API_BASE}/testimonial`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(testiData)
+      });
+
+      if (res.ok) {
+        await fetchData();
+        return true;
+      }
+      if (res.status === 401) logout();
+      return false;
+    } catch (err) {
+      console.error('Error adding testimonial:', err);
+      return false;
+    }
+  }, [fetchData, logout]);
+
+  const updateTestimonial = useCallback(async (id, testiData) => {
+    const token = localStorage.getItem('velvet_token');
+    if (!token) return false;
+
+    try {
+      const res = await fetch(`${API_BASE}/testimonial/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(testiData)
+      });
+
+      if (res.ok) {
+        await fetchData();
+        return true;
+      }
+      if (res.status === 401) logout();
+      return false;
+    } catch (err) {
+      console.error('Error updating testimonial:', err);
+      return false;
+    }
+  }, [fetchData, logout]);
+
+  const deleteTestimonial = useCallback(async (id) => {
+    const token = localStorage.getItem('velvet_token');
+    if (!token) return false;
+
+    try {
+      const res = await fetch(`${API_BASE}/testimonial/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (res.ok) {
+        await fetchData();
+        return true;
+      }
+      if (res.status === 401) logout();
+      return false;
+    } catch (err) {
+      console.error('Error deleting testimonial:', err);
+      return false;
+    }
+  }, [fetchData, logout]);
+
   // Delete Enquiry
   const deleteEnquiry = useCallback(async (id) => {
     const token = localStorage.getItem('velvet_token');
@@ -561,6 +785,8 @@ export function AdminProvider({ children }) {
         youtubeUrl,
         stats,
         brandText,
+        portfolios,
+        testimonials,
         enquiries,
         isLoading,
         addImages,
@@ -571,7 +797,13 @@ export function AdminProvider({ children }) {
         saveStats,
         saveBrandText,
         submitEnquiry,
-        deleteEnquiry
+        deleteEnquiry,
+        addPortfolio,
+        updatePortfolio,
+        deletePortfolio,
+        addTestimonial,
+        updateTestimonial,
+        deleteTestimonial
       }}
     >
       {children}

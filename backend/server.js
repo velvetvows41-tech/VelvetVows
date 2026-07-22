@@ -11,6 +11,8 @@ const Item = require('./models/Item');
 const Video = require('./models/Video');
 const Stats = require('./models/Stats');
 const BrandText = require('./models/BrandText');
+const Portfolio = require('./models/Portfolio');
+const Testimonial = require('./models/Testimonial');
 
 // Load environment variables
 dotenv.config();
@@ -58,6 +60,8 @@ app.use('/api/video', require('./routes/video'));
 app.use('/api/stats', require('./routes/stats'));
 app.use('/api/enquiries', require('./routes/enquiries'));
 app.use('/api/brand-text', require('./routes/brandText'));
+app.use('/api/portfolio', require('./routes/portfolio'));
+app.use('/api/testimonial', require('./routes/testimonial'));
 
 // Serve frontend build static files in production if needed,
 // but for development, we will run the React Vite app on its own port.
@@ -141,6 +145,48 @@ const seedData = async () => {
       const defaultBrandText = new BrandText();
       await defaultBrandText.save();
       console.log('Default brand text seeded!');
+    }
+
+    // 6. Seed default portfolios if none exist
+    const portfolioCount = await Portfolio.countDocuments();
+    if (portfolioCount === 0) {
+      console.log('Seeding default portfolios...');
+      await Portfolio.create([
+        {
+          title: 'Traditional Malva Heritage Decor',
+          category: 'Theme Curation',
+          description: 'A tribute to local heritage. We utilize raw brass vessels, native marigolds, handmade terracotta details, and block-print textiles to frame your ancestral legacy with absolute class and sophistication.',
+          src: '/images/malva_heritage_decor.jpg',
+          ctaText: 'Consult on Heritage Design',
+          ctaLink: '/contact'
+        },
+        {
+          title: 'Immersive Walkways & Arrival Experiences',
+          category: 'Scenography',
+          description: 'Creating a sense of wonder from the very first step. Our walkway installations feature custom architectural arches, fog and mist coordination, soft lighting arrays, and lush floral tunnels to guide your guests.',
+          src: '/images/immersive_way.jpg',
+          ctaText: 'Request Arrival Scenography',
+          ctaLink: '/contact'
+        }
+      ]);
+      console.log('Default portfolios seeded!');
+    }
+
+    // 7. Seed default testimonials if none exist
+    const testimonialCount = await Testimonial.countDocuments();
+    if (testimonialCount === 0) {
+      console.log('Seeding default testimonials...');
+      await Testimonial.create([
+        {
+          couple: 'Aditi & Kabir',
+          text: 'Velvet Vows took care of everything from hotel check-in desks to stage timelines. We were guests at our own wedding!'
+        },
+        {
+          couple: 'Rohan & Riya',
+          text: 'The heritage mandap decor looked like a royal dream. Highly recommend their bespoke planning services!'
+        }
+      ]);
+      console.log('Default testimonials seeded!');
     }
   } catch (error) {
     console.error('Error seeding data:', error);

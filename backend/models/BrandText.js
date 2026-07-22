@@ -15,7 +15,7 @@ const BrandTextSchema = new mongoose.Schema({
   },
   homeAboutTitle: {
     type: String,
-    default: 'Where Luxury Meets Tradition',
+    default: 'Your Dream Event planned with Love and Perfection',
   },
   homeAboutTagline: {
     type: String,
