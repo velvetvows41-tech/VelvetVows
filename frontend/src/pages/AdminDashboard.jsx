@@ -1646,78 +1646,81 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Navigation tabs */}
-      <div className="admin-tabs" role="tablist">
-        {tabs.map(tab => (
-          <button
-            key={tab.id}
-            role="tab"
-            aria-selected={activeTab === tab.id}
-            className={`admin-tab ${activeTab === tab.id ? 'admin-tab--active' : ''}`}
-            onClick={() => setActiveTab(tab.id)}
-          >
-            <span>{tab.icon}</span>
-            {tab.label}
-            {tab.count !== null && (
-              <span className="admin-tab-count">{tab.count}</span>
-            )}
-          </button>
-        ))}
-      </div>
+      {/* Main Content Area: Sidebar layout on desktop, responsive stack on mobile */}
+      <div className="admin-main-container">
+        {/* Navigation tabs */}
+        <div className="admin-tabs" role="tablist">
+          {tabs.map(tab => (
+            <button
+              key={tab.id}
+              role="tab"
+              aria-selected={activeTab === tab.id}
+              className={`admin-tab ${activeTab === tab.id ? 'admin-tab--active' : ''}`}
+              onClick={() => setActiveTab(tab.id)}
+            >
+              <span>{tab.icon}</span>
+              {tab.label}
+              {tab.count !== null && (
+                <span className="admin-tab-count">{tab.count}</span>
+              )}
+            </button>
+          ))}
+        </div>
 
-      {/* Panel body */}
-      <div className="admin-panel-wrap">
-        {activeTab === 'youtube' ? (
-          <YoutubePanel
-            url={youtubeUrl}
-            onSave={saveYoutubeUrl}
-            showToast={triggerToast}
-          />
-        ) : activeTab === 'stats' ? (
-          <StatsPanel
-            stats={stats}
-            onSave={saveStats}
-            showToast={triggerToast}
-          />
-        ) : activeTab === 'brandText' ? (
-          <BrandTextPanel
-            brandText={brandText}
-            onSave={saveBrandText}
-            showToast={triggerToast}
-          />
-        ) : activeTab === 'enquiries' ? (
-          <EnquiriesPanel
-            enquiries={enquiries}
-            onDelete={deleteEnquiry}
-            showToast={triggerToast}
-          />
-        ) : activeTab === 'portfolio' ? (
-          <PortfolioPanel
-            portfolios={portfolios}
-            onAdd={addPortfolio}
-            onUpdate={updatePortfolio}
-            onDelete={deletePortfolio}
-            showToast={triggerToast}
-          />
-        ) : activeTab === 'testimonials' ? (
-          <TestimonialPanel
-            testimonials={testimonials}
-            onAdd={addTestimonial}
-            onUpdate={updateTestimonial}
-            onDelete={deleteTestimonial}
-            showToast={triggerToast}
-          />
-        ) : (
-          <DashPanel
-            {...panels[activeTab]}
-            onAdd={addImages}
-            onDelete={deleteImage}
-            onLabel={updateImageLabel}
-            onClear={clearAll}
-            showToast={triggerToast}
-            key={activeTab}
-          />
-        )}
+        {/* Panel body */}
+        <div className="admin-panel-wrap">
+          {activeTab === 'youtube' ? (
+            <YoutubePanel
+              url={youtubeUrl}
+              onSave={saveYoutubeUrl}
+              showToast={triggerToast}
+            />
+          ) : activeTab === 'stats' ? (
+            <StatsPanel
+              stats={stats}
+              onSave={saveStats}
+              showToast={triggerToast}
+            />
+          ) : activeTab === 'brandText' ? (
+            <BrandTextPanel
+              brandText={brandText}
+              onSave={saveBrandText}
+              showToast={triggerToast}
+            />
+          ) : activeTab === 'enquiries' ? (
+            <EnquiriesPanel
+              enquiries={enquiries}
+              onDelete={deleteEnquiry}
+              showToast={triggerToast}
+            />
+          ) : activeTab === 'portfolio' ? (
+            <PortfolioPanel
+              portfolios={portfolios}
+              onAdd={addPortfolio}
+              onUpdate={updatePortfolio}
+              onDelete={deletePortfolio}
+              showToast={triggerToast}
+            />
+          ) : activeTab === 'testimonials' ? (
+            <TestimonialPanel
+              testimonials={testimonials}
+              onAdd={addTestimonial}
+              onUpdate={updateTestimonial}
+              onDelete={deleteTestimonial}
+              showToast={triggerToast}
+            />
+          ) : (
+            <DashPanel
+              {...panels[activeTab]}
+              onAdd={addImages}
+              onDelete={deleteImage}
+              onLabel={updateImageLabel}
+              onClear={clearAll}
+              showToast={triggerToast}
+              key={activeTab}
+            />
+          )}
+        </div>
       </div>
 
       {/* Help Block */}

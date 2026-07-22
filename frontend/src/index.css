@@ -4565,5 +4565,154 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
+/* -------------------------------------------------------------
+   MODERN DASHBOARD LAYOUT & TEXTAREA ACCESSIBILITY OVERRIDES
+   ------------------------------------------------------------- */
+
+/* Desktop/Tablet Layout sidebar grid */
+.admin-main-container {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 30px;
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 0 24px;
+  align-items: start;
+}
+
+/* Sidebar navigation tab layout override */
+.admin-main-container .admin-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0;
+  margin: 0;
+  max-width: 100%;
+}
+
+.admin-main-container .admin-tab {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  font-family: Cinzel, serif;
+  font-size: 0.72rem;
+  letter-spacing: 1.5px;
+  color: var(--text);
+  background: #fff;
+  border: 1px solid rgba(184, 150, 46, 0.15);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.25s ease-in-out;
+  text-align: left;
+  justify-content: flex-start;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.admin-main-container .admin-tab:hover {
+  background: #faf6ee;
+  border-color: var(--gold);
+  color: var(--brown);
+  transform: translateX(4px);
+}
+
+.admin-main-container .admin-tab--active {
+  background: linear-gradient(135deg, var(--gold-dark), var(--gold)) !important;
+  color: #fff !important;
+  border-color: var(--gold-dark) !important;
+  border-bottom: 1px solid var(--gold-dark) !important;
+  box-shadow: 0 4px 12px rgba(184, 150, 46, 0.22);
+  margin-bottom: 0;
+  top: 0;
+  z-index: auto;
+}
+
+.admin-main-container .admin-tab--active .admin-tab-count {
+  background: #fff;
+  color: var(--gold-dark);
+}
+
+.admin-main-container .admin-panel-wrap {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+.admin-main-container .dash-panel {
+  border-radius: 12px;
+}
+
+/* Highly visible textareas and input adjustments */
+.yt-panel textarea.yt-input,
+.dash-panel textarea.yt-input,
+textarea.yt-input {
+  min-height: 140px !important;
+  line-height: 1.6 !important;
+  resize: vertical !important;
+  font-size: 0.92rem !important;
+  font-family: Lato, sans-serif !important;
+  padding: 14px 18px !important;
+  box-sizing: border-box;
+  background: #fff !important;
+  border-color: rgba(184, 150, 46, 0.3) !important;
+}
+
+.yt-panel input.yt-input,
+.dash-panel input.yt-input,
+input.yt-input {
+  padding: 12px 16px !important;
+  font-size: 0.92rem !important;
+  box-sizing: border-box;
+  background: #fff !important;
+  border-color: rgba(184, 150, 46, 0.3) !important;
+}
+
+/* Tablet & Mobile responsive overrides */
+@media (max-width: 960px) {
+  .admin-main-container {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 0 20px;
+    margin: 20px auto;
+  }
+  
+  .admin-main-container .admin-tabs {
+    flex-direction: row;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    display: flex;
+    flex-wrap: nowrap !important;
+    gap: 8px;
+    padding: 4px 0 12px;
+    border-bottom: 1.5px solid rgba(184, 150, 46, 0.15);
+  }
+  
+  .admin-main-container .admin-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .admin-main-container .admin-tab {
+    flex: 0 0 auto;
+    width: auto;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 0.68rem;
+    letter-spacing: 1px;
+  }
+  
+  .admin-main-container .admin-tab:hover {
+    transform: none;
+  }
+
+  .admin-main-container .admin-tab--active {
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold)) !important;
+    color: #fff !important;
+  }
+}
+
+
 
 
