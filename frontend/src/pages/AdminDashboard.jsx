@@ -174,6 +174,8 @@ function ImagesGrid({ type, images, onDelete, onLabel, emptyMsg }) {
   const [editLabel, setEditLabel] = useState('');
   const [editDescription, setEditDescription] = useState('');
   const [previewImg, setPreviewImg] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
 
   // Handle Escape key to close preview
   useEffect(() => {
@@ -196,9 +198,21 @@ function ImagesGrid({ type, images, onDelete, onLabel, emptyMsg }) {
     setEditDescription(img.description || '');
   };
 
-  const saveLabel = () => {
-    onLabel(editingImg.id, editLabel.trim(), type === 'services' ? editDescription.trim() : undefined);
-    setEditingImg(null);
+  const saveLabel = async () => {
+    setIsSaving(true);
+    const success = await onLabel(editingImg.id, editLabel.trim(), type === 'services' ? editDescription.trim() : undefined);
+    setIsSaving(false);
+    if (success !== false) {
+      setEditingImg(null);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this image?')) {
+      setDeletingId(id);
+      await onDelete(id);
+      setDeletingId(null);
+    }
   };
 
   return (
@@ -221,11 +235,12 @@ function ImagesGrid({ type, images, onDelete, onLabel, emptyMsg }) {
               <div className="ig-badge" aria-hidden="true">{idx + 1}</div>
               <button 
                 className="ig-delete" 
-                onClick={() => onDelete(img.id)}
+                onClick={() => handleDelete(img.id)}
                 aria-label={`Delete ${img.label}`}
                 title="Delete"
+                disabled={deletingId === img.id}
               >
-                &times;
+                {deletingId === img.id ? '...' : '×'}
               </button>
               <div className="ig-label-row" onClick={() => startEdit(img)}>
                 <div style={{ display: 'flex', flexDirection: 'column', width: '100%', padding: '4px 8px' }}>
@@ -300,8 +315,8 @@ function ImagesGrid({ type, images, onDelete, onLabel, emptyMsg }) {
               <button className="edit-modal-btn edit-modal-btn-cancel" onClick={() => setEditingImg(null)}>
                 Cancel
               </button>
-              <button className="edit-modal-btn edit-modal-btn-save" onClick={saveLabel}>
-                Save Changes
+              <button className="edit-modal-btn edit-modal-btn-save" onClick={saveLabel} disabled={isSaving}>
+                {isSaving ? 'Saving...' : 'Save Changes'}
               </button>
             </div>
           </div>
@@ -314,14 +329,12 @@ function ImagesGrid({ type, images, onDelete, onLabel, emptyMsg }) {
           role="dialog" 
           aria-modal="true" 
           onClick={() => setPreviewImg(null)}
-          onTouchStart={() => setPreviewImg(null)}
         >
           <button className="ig-lb-close" onClick={() => setPreviewImg(null)}>&times;</button>
           <img 
             src={previewImg.src} 
             alt={previewImg.label} 
             onClick={e => e.stopPropagation()} 
-            onTouchStart={e => e.stopPropagation()}
           />
         </div>
       )}
@@ -333,6 +346,7 @@ function ImagesGrid({ type, images, onDelete, onLabel, emptyMsg }) {
 function DashPanel({ type, title, icon, headerClass, images, onAdd, onDelete, onLabel, onClear, showToast }) {
   const [pendingImages, setPendingImages] = useState([]);
   const [uploading, setUploading] = useState(false);
+  const [publishing, setPublishing] = useState(false);
 
   const compressImage = (file) => {
     return new Promise((resolve) => {
@@ -407,7 +421,9 @@ function DashPanel({ type, title, icon, headerClass, images, onAdd, onDelete, on
       }
     }
 
+    setPublishing(true);
     const success = await onAdd(type, pendingImages);
+    setPublishing(false);
     if (success) {
       showToast(`✓ ${pendingImages.length} image${pendingImages.length > 1 ? 's' : ''} published to ${title}!`, 'success');
       setPendingImages([]);
@@ -501,8 +517,8 @@ function DashPanel({ type, title, icon, headerClass, images, onAdd, onDelete, on
                 </div>
               ))}
             </div>
-            <button className="dash-publish-btn" onClick={handlePublish}>
-              ✦ PUBLISH {pendingImages.length} IMAGE{pendingImages.length > 1 ? 's' : ''} TO {title.toUpperCase()}
+            <button className="dash-publish-btn" onClick={handlePublish} disabled={publishing}>
+              {publishing ? '✦ PUBLISHING...' : `✦ PUBLISH ${pendingImages.length} IMAGE${pendingImages.length > 1 ? 's' : ''} TO {title.toUpperCase()}`}
             </button>
           </div>
         )}
@@ -512,9 +528,12 @@ function DashPanel({ type, title, icon, headerClass, images, onAdd, onDelete, on
           type={type}
           images={images}
           onDelete={handleDeleteCurrent}
-          onLabel={(id, label, description) => {
-            onLabel(type, id, label, description);
-            showToast('Item updated!', 'success');
+          onLabel={async (id, label, description) => {
+            const success = await onLabel(type, id, label, description);
+            if (success) {
+              showToast('Item updated!', 'success');
+            }
+            return success;
           }}
           emptyMsg={`No ${title.toLowerCase()} images yet — upload some above.`}
         />
@@ -526,6 +545,7 @@ function DashPanel({ type, title, icon, headerClass, images, onAdd, onDelete, on
 // Youtube config panel
 function YoutubePanel({ url, onSave, showToast }) {
   const [inputUrl, setInputUrl] = useState(url);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Helper to validate video
   const validateUrl = (val) => {
@@ -534,10 +554,16 @@ function YoutubePanel({ url, onSave, showToast }) {
     return /youtube\.com|youtu\.be/i.test(val);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (validateUrl(inputUrl)) {
-      onSave(inputUrl);
-      showToast(inputUrl.trim() ? '✓ YouTube video saved!' : 'YouTube video cleared.', 'success');
+      setIsSaving(true);
+      const success = await onSave(inputUrl);
+      setIsSaving(false);
+      if (success !== false) {
+        showToast(inputUrl.trim() ? '✓ YouTube video saved!' : 'YouTube video cleared.', 'success');
+      } else {
+        showToast('❌ Failed to save video URL.', 'error');
+      }
     } else {
       showToast('❌ Could not recognise a YouTube URL. Please try again.', 'error');
     }
@@ -577,7 +603,9 @@ function YoutubePanel({ url, onSave, showToast }) {
             onChange={e => setInputUrl(e.target.value)}
             placeholder="e.g. https://www.youtube.com/watch?v=PehgmzwIYKw"
           />
-          <button className="yt-save-btn" onClick={handleSave}>Save Video</button>
+          <button className="yt-save-btn" onClick={handleSave} disabled={isSaving}>
+            {isSaving ? 'Saving...' : 'Save Video'}
+          </button>
         </div>
 
         {youtubeId ? (
@@ -618,6 +646,7 @@ function StatsPanel({ stats, onSave, showToast }) {
   const [eventsCrafted, setEventsCrafted] = useState(stats.eventsCrafted || '');
   const [happyClients, setHappyClients] = useState(stats.happyClients || '');
   const [citiesServed, setCitiesServed] = useState(stats.citiesServed || '');
+  const [isSaving, setIsSaving] = useState(false);
 
   // Sync state with props
   useEffect(() => {
@@ -629,12 +658,14 @@ function StatsPanel({ stats, onSave, showToast }) {
 
   const handleSave = async (e) => {
     e.preventDefault();
+    setIsSaving(true);
     const success = await onSave({
       yearsOfGrace,
       eventsCrafted,
       happyClients,
       citiesServed
     });
+    setIsSaving(false);
     if (success) {
       showToast('✓ Story & Vision stats updated successfully!', 'success');
     } else {
@@ -703,7 +734,9 @@ function StatsPanel({ stats, onSave, showToast }) {
               />
             </div>
           </div>
-          <button type="submit" className="yt-save-btn" style={{ alignSelf: 'flex-start', padding: '10px 24px' }}>Save Stats</button>
+          <button type="submit" className="yt-save-btn" style={{ alignSelf: 'flex-start', padding: '10px 24px' }} disabled={isSaving}>
+            {isSaving ? 'Saving...' : 'Save Stats'}
+          </button>
         </form>
       </div>
     </div>
@@ -806,6 +839,7 @@ function EnquiriesPanel({ enquiries, onDelete, showToast }) {
 // Website Brand Copy editing panel (MERN Premium Feature)
 function BrandTextPanel({ brandText, onSave, showToast }) {
   const [formData, setFormData] = useState({ ...brandText });
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     setFormData({ ...brandText });
@@ -817,7 +851,9 @@ function BrandTextPanel({ brandText, onSave, showToast }) {
 
   const handleSave = async (e) => {
     e.preventDefault();
+    setIsSaving(true);
     const success = await onSave(formData);
+    setIsSaving(false);
     if (success) {
       showToast('✓ Brand texts updated successfully!', 'success');
     } else {
@@ -1059,8 +1095,8 @@ function BrandTextPanel({ brandText, onSave, showToast }) {
             </div>
           </div>
 
-          <button type="submit" className="save-btn" style={{ padding: '14px 28px', background: 'var(--gold-dark)', color: '#fff', border: 'none', cursor: 'pointer', alignSelf: 'flex-start', marginTop: '10px' }}>
-            ✦ Save Brand Copy Text ✦
+          <button type="submit" className="save-btn" style={{ padding: '14px 28px', background: 'var(--gold-dark)', color: '#fff', border: 'none', cursor: 'pointer', alignSelf: 'flex-start', marginTop: '10px' }} disabled={isSaving}>
+            {isSaving ? '✦ SAVING COPY... ✦' : '✦ Save Brand Copy Text ✦'}
           </button>
         </form>
       </div>

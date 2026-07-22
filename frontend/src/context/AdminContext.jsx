@@ -333,7 +333,7 @@ export function AdminProvider({ children }) {
   // Delete image
   const deleteImage = useCallback(async (type, id) => {
     const token = localStorage.getItem('velvet_token');
-    if (!token) return;
+    if (!token) return false;
 
     try {
       const res = await fetch(`${API_BASE}/items/${id}`, {
@@ -345,18 +345,21 @@ export function AdminProvider({ children }) {
 
       if (res.ok) {
         await fetchData();
+        return true;
       } else if (res.status === 401) {
         logout();
       }
+      return false;
     } catch (err) {
       console.error('Error deleting image:', err);
+      return false;
     }
   }, [fetchData, logout]);
 
   // Update label
   const updateImageLabel = useCallback(async (type, id, label, description) => {
     const token = localStorage.getItem('velvet_token');
-    if (!token) return;
+    if (!token) return false;
 
     try {
       const res = await fetch(`${API_BASE}/items/${id}/label`, {
@@ -370,11 +373,14 @@ export function AdminProvider({ children }) {
 
       if (res.ok) {
         await fetchData();
+        return true;
       } else if (res.status === 401) {
         logout();
       }
+      return false;
     } catch (err) {
       console.error('Error updating label:', err);
+      return false;
     }
   }, [fetchData, logout]);
 

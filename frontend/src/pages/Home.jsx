@@ -556,14 +556,12 @@ export default function Home() {
             aria-modal="true" 
             aria-label={lightboxImg.label} 
             onClick={() => setLightboxImg(null)}
-            onTouchStart={() => setLightboxImg(null)}
           >
             <button className="lb-close" onClick={() => setLightboxImg(null)}>&times;</button>
             <img 
               src={lightboxImg.src} 
               alt={lightboxImg.label} 
               onClick={e => e.stopPropagation()} 
-              onTouchStart={e => e.stopPropagation()}
             />
           </div>
         )}
